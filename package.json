@@ -2,6 +2,7 @@
   "name": "assignment-a2-the-gathering-web-scraper",
   "version": "1.0.0",
   "description": "1DV026 - Examination Assignment Module A - The Gathering Web Scraper",
+  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -15,6 +16,7 @@
   "author": "Oliwer Ellréus <oe222ez@student.lnu.se>",
   "license": "MIT",
   "dependencies": {
+    "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
