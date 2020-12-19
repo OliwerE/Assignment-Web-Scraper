@@ -12,10 +12,10 @@ function startScraper () {
 
 
     // skapa scraper
-    const webScraper = new application.Application('https://cscloud6-127.lnu.se/scraper-site-1')
+    const webScraper = new application.Application('https://cscloud6-127.lnu.se/scraper-site-1') // https://cscloud6-127.lnu.se/scraper-site-2
 
     //startar scraper
-    webScraper.startScraper() // ta bort hårdkodning!
+    webScraper.firstScrape() // ta bort hårdkodning!
 }
 
 startScraper()

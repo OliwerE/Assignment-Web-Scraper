@@ -6,6 +6,7 @@
  */
 
 import fetch from 'node-fetch'
+import { JSDOM } from 'jsdom'
 
 export class Scraper {
   constructor () {
@@ -13,13 +14,13 @@ export class Scraper {
       this.lastResponse // respons
   }
 
-  startScraping (url) {
+  startScraping (url, typeOfData) {
       this.currentUrl = url
       console.log('Scraper, scraping begins from', url)
-      this.getScraper()
+      this.getScraper(typeOfData)
   }
 
-  async getScraper () { // kör node fetch med current url här!
+  async getScraper (typeOfData) { // kör node fetch med current url här!
     console.log('begins node fetch')
 
     const scraper = await fetch(this.currentUrl).then(response => {
@@ -27,11 +28,17 @@ export class Scraper {
     }).then(text => {
       this.lastResponse = text
       console.log(this.lastResponse) // visar respons
-
+      if (typeOfData === 'firstLinks') {
+      this.getFirstLinks() // gör bättre lösning?
+      } else if (typeOfData === 'links') {
+        // gör något
+      }
     }).catch(err => {
       console.log('fel!', err)
     })
 
   }
+
+
 
 }
