@@ -30,8 +30,11 @@ export class Scraper {
       console.log(this.lastResponse) // visar respons
       if (typeOfData === 'firstLinks') {
       this.getFirstLinks() // gör bättre lösning?
-      } else if (typeOfData === 'links') {
-        // gör något
+      } else if (typeOfData === 'firstLinksCalendar') {
+        this.getFirstLinks(typeOfData) // gör bättre lösning?
+        } else if (typeOfData === 'links') {
+        console.log('HÄMTAT!! links')
+        this.processLinks()
       }
     }).catch(err => {
       console.log('fel!', err)

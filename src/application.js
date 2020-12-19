@@ -17,6 +17,7 @@ export class Application extends Scraper {
       super()
       this.startUrl = startUrl
       this.firstPageLinks
+      this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -24,21 +25,34 @@ export class Application extends Scraper {
       console.log('calls scraper')
       this.startScraping(this.startUrl, 'firstLinks')
 
+
     }
 
-    getFirstLinks() { // tar ut första länkarna på startsidan
+    getFirstLinks(typeOfData) { // tar ut första länkarna på startsidan
       console.log('getFIRSTLinks startar')
       const startDom = new JSDOM(this.lastResponse)
       console.log('first links')
-      this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href)
+      this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"], a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
       console.log(this.firstPageLinks)
 
+      if(typeOfData === 'firstLinksCalendar') {
+        console.log('KALENDER GET FIRST LINKS!')
+      } else {
       this.beginScrapingAllPages()
+      }
 
       }
 
       beginScrapingAllPages () {
         console.log('-------beginScrapingAllPages-------')
-        console.log('antal sidor att skrapa: ', this.firstPageLinks.length)
+
+        // alla sidor delar skrapas separat pga olika struktur.
+        this.beginScrapeCalendar()
+        //this.scrapeCinema()
+        //this.scrapeDinner()
+      }
+
+      beginScrapeCalendar () {
+        this.startScraping(this.firstPageLinks[0], 'firstLinksCalendar') // hårdkoda vilken länk i array???
       }
 }
