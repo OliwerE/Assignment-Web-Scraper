@@ -8,9 +8,14 @@
 import * as application from './application.js'
 
 function startScraper () {
-    console.table('app.js test')
+    // hantera argument
 
-    application.importTests()
+
+    // skapa scraper
+    const webScraper = new application.Application('https://cscloud6-127.lnu.se/scraper-site-1')
+
+    //startar scraper
+    webScraper.startScraper() // ta bort hårdkodning!
 }
 
 startScraper()

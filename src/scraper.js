@@ -5,6 +5,12 @@
  * @version 1.0.0
  */
 
-export function scraper () {
-    console.table('import test scraper')
+export class Scraper {
+    constructor () {
+    }
+
+    startScraping (url) {
+        console.log('Scraper, scraping begins from', url)
+    }
+
 }

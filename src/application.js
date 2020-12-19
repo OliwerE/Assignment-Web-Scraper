@@ -8,8 +8,14 @@
 import * as scraper from './scraper.js'
 import * as suggestion from './suggestion.js'
 
-export function importTests () {
-    console.log('application imported')
-    scraper.scraper()
-    suggestion.suggestion()
+export class Application {
+    constructor (startUrl) {
+        this.startUrl = startUrl
+        this.scraper = new scraper.Scraper() // instans av scraper
+    }
+
+    startScraper () {
+        console.log('calls scraper')
+        this.scraper.startScraping(this.startUrl)
+    }
 }
