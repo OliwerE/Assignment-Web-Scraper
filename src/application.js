@@ -16,8 +16,9 @@ export class Application extends Scraper {
     constructor (startUrl) {
       super()
       this.startUrl = startUrl
-      this.firstPageLinks
+      this.firstPageLinks // länkarna på första sidan
       this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
+      this.calendarFirstPageLinks
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -32,12 +33,15 @@ export class Application extends Scraper {
       console.log('getFIRSTLinks startar')
       const startDom = new JSDOM(this.lastResponse)
       console.log('first links')
-      this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"], a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
-      console.log(this.firstPageLinks)
+      
 
       if(typeOfData === 'firstLinksCalendar') {
+        this.calendarFirstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
         console.log('KALENDER GET FIRST LINKS!')
+        this.scrapeAllCalendars()
       } else {
+      this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href)
+      console.log(this.firstPageLinks)
       this.beginScrapingAllPages()
       }
 
@@ -54,5 +58,10 @@ export class Application extends Scraper {
 
       beginScrapeCalendar () {
         this.startScraping(this.firstPageLinks[0], 'firstLinksCalendar') // hårdkoda vilken länk i array???
+      }
+
+      scrapeAllCalendars () {
+        console.log('-----starts scrapeAllCalendars------')
+        console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
       }
 }
