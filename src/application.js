@@ -43,12 +43,19 @@ export class Application extends Scraper {
       
 
       if(typeOfData === 'firstLinksCalendar') {
-        this.calendarFirstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
+        const relativeLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
         console.log('KALENDER GET FIRST LINKS!')
         //this.scrapeAllCalendars()
 
         //bygg absoluta länkar här:
+        console.log('number of links:', relativeLinks.length)
 
+        this.calendarFirstPageLinks = []
+        
+        for (let i = 0; i < relativeLinks.length; i++) {
+          console.log('calendar link: ', i)
+          this.calendarFirstPageLinks[i] = this.firstPageLinks[0].concat(relativeLinks[i].slice(2)) // creates absolute link
+        }
       } else {
       this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href)
       console.log(this.firstPageLinks)
