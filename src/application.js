@@ -87,8 +87,23 @@ export class Application extends Scraper {
     })
       }
 
-      scrapeAllCalendars () {
+      async scrapeAllCalendars () {
         console.log('-----starts scrapeAllCalendars------')
         console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
+        console.log(this.calendarFirstPageLinks.length)
+
+        var possibleDays = {}
+
+        for(let i = 0; i < this.calendarFirstPageLinks.length; i++) {
+          var personPossibleDays = []
+          console.log('skrapa kalender länk', i)
+
+          await new Promise((resolve, reject) => {
+            resolve(this.getScraper(this.calendarFirstPageLinks[i]))
+          }).then(() => {
+            console.log('person', i, 'calendar scraped!')
+          })
+        }
+
       }
 }
