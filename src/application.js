@@ -20,6 +20,7 @@ export class Application extends Scraper {
       this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
       this.calendarFirstPageLinks
       this.calendarDays // alla personers möjliga dagar i separata arrayer
+      this.calendarPotentialDays = [] // möjliga dagar enligt kalender
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -146,6 +147,55 @@ export class Application extends Scraper {
         console.log('---possibleDays startar----')
         console.log('dagar som de olika personerna kan:')
         console.log(this.calendarDays)
+
+        // dagarna antal ggr (gör om till objekt??)
+        var fridayCount = 0
+        var saturdayCount = 0
+        var sundayCount = 0
+
+        // gå igenom arrayer ta reda på vilka dagar som förekommer 3 ggr:
+
+        for (let i = 0; i < this.calendarDays.length; i++) { // loop igenom alla arrayer i array och räkna antal ggr varje dag förekommer. 3ggr = alla kan!
+          //console.log(i)
+          var arrayLength = this.calendarDays[i].length
+          //console.log(arrayLength)
+
+          for (let a = 0; a < arrayLength; a++) {
+            var indexDay = this.calendarDays[i][a] // a day in a persons array
+            //console.log(indexDay)
+            if (indexDay === 'Friday') {
+              fridayCount += 1
+            } else if (indexDay === 'Saturday') {
+              saturdayCount += 1
+          } else if (indexDay === 'Sunday') {
+            sundayCount += 1
+          }
+
+          }
+        }
+        console.log('friday: ', fridayCount, 'saturday: ', saturdayCount, 'sunday: ', sundayCount)
+
+        //välj ut möjliga dagar: SKAPA BÄTTRE LÖSNING!!
+
+        if (fridayCount === 3) {
+          this.calendarPotentialDays.push('Friday')
+        }
+
+        if (saturdayCount === 3) {
+          this.calendarPotentialDays.push('Saturday')
+        }
+
+        if (sundayCount === 3) {
+          this.calendarPotentialDays.push('Sunday')
+        }
+
+        /*
+        if (fridayCount !== 3 && saturdayCount !== 3 && sundayCount !== 3) {
+          throw new Error('ingen dag möjlig!')
+        }
+        */
+
+        console.log(this.calendarPotentialDays)
 
       }
 }
