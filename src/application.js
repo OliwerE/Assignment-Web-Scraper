@@ -259,6 +259,21 @@ export class Application extends Scraper {
           
         }
         console.log(this.cinemaRequestLinks)
+        this.scrapePotentialCinemaDays()
+      }
+      
+      async scrapePotentialCinemaDays () {
+        console.log('-----scrape cinema days-----')
+
+        for (let i = 0; i < this.cinemaRequestLinks.length; i++) {
+
+          await new Promise((resolve, reject) => {
+            resolve(this.getScraper(this.cinemaRequestLinks[i]))
+          }).then(() => {
+            console.log('A cinema get request resolved!')
+          })
+
+        }
 
       }
 }
