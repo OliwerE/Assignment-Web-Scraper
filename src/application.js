@@ -21,6 +21,7 @@ export class Application extends Scraper {
       this.calendarFirstPageLinks
       this.calendarDays // alla personers möjliga dagar i separata arrayer
       this.calendarPotentialDays = [] // möjliga dagar enligt kalender
+      this.cinemaRequestLinks = [] // links used to request movies from cinema.
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -250,12 +251,14 @@ export class Application extends Scraper {
           const thirdRequestPart = '&movie=0'
 
           for (let a = 1; a <= numberOfMovies; a++) { // skapar alla relativa get länkar.
-          var requestLink = firstRequestPart.concat(checkDay).concat(thirdRequestPart).concat(a)
-          console.log(requestLink)
+          var requestLink = this.firstPageLinks[1].concat('/').concat(firstRequestPart).concat(checkDay).concat(thirdRequestPart).concat(a)
+          this.cinemaRequestLinks.push(requestLink)
+          //console.log(requestLink)
           }
 
           
         }
+        console.log(this.cinemaRequestLinks)
 
       }
 }
