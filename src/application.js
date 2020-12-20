@@ -22,14 +22,21 @@ export class Application extends Scraper {
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
-    firstScrape () {
-      console.log('calls scraper')
-      this.startScraping(this.startUrl, 'firstLinks')
+    async firstScrape () {
+    console.log('calls scraper first links')
 
 
-    }
+    // promise väntar på första url html skrapas
+    await new Promise((resolve, reject) => {
+      resolve(this.getScraper(this.startUrl))
+    }).then(() => {
+      console.log('first links resolved!')
+      this.getFirstLinks()
+    })
 
-    getFirstLinks(typeOfData) { // tar ut första länkarna på startsidan
+  }
+
+    getFirstLinks(typeOfData) { // tar ut första länkarna på startsidan och kalender (om typeOfData är firstLinksCalendar)
       console.log('getFIRSTLinks startar')
       const startDom = new JSDOM(this.lastResponse)
       console.log('first links')
@@ -38,7 +45,10 @@ export class Application extends Scraper {
       if(typeOfData === 'firstLinksCalendar') {
         this.calendarFirstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
         console.log('KALENDER GET FIRST LINKS!')
-        this.scrapeAllCalendars()
+        //this.scrapeAllCalendars()
+
+        //bygg absoluta länkar här:
+
       } else {
       this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href)
       console.log(this.firstPageLinks)
@@ -56,8 +66,18 @@ export class Application extends Scraper {
         //this.scrapeDinner()
       }
 
-      beginScrapeCalendar () {
-        this.startScraping(this.firstPageLinks[0], 'firstLinksCalendar') // hårdkoda vilken länk i array???
+      async beginScrapeCalendar () {
+
+      // promise väntar på första sidan i kalender html
+      await new Promise((resolve, reject) => {
+        resolve(this.getScraper(this.firstPageLinks[0]))
+      }).then(() => {
+        console.log('first links CALENDAR resolved!, starts creating links!')
+        this.getFirstLinks('firstLinksCalendar')
+    }).then (() => {
+      console.log('personal calendar links created!')
+      this.scrapeAllCalendars()
+    })
       }
 
       scrapeAllCalendars () {
