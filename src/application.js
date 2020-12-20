@@ -19,6 +19,7 @@ export class Application extends Scraper {
       this.firstPageLinks // länkarna på första sidan
       this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
       this.calendarFirstPageLinks
+      this.calendarDays // alla personers möjliga dagar i separata arrayer
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -92,18 +93,59 @@ export class Application extends Scraper {
         console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
         console.log(this.calendarFirstPageLinks.length)
 
-        var possibleDays = {}
 
+        this.calendarDays  = [] // array with all persons possible days
         for(let i = 0; i < this.calendarFirstPageLinks.length; i++) {
-          var personPossibleDays = []
           console.log('skrapa kalender länk', i)
 
           await new Promise((resolve, reject) => {
             resolve(this.getScraper(this.calendarFirstPageLinks[i]))
           }).then(() => {
             console.log('person', i, 'calendar scraped!')
+
+            // lägg till alla dagar i array:
+            const calendarDom = new JSDOM(this.lastResponse)
+            const days = Array.from(calendarDom.window.document.querySelectorAll('th'))//.map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
+            const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td'))//.map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
+            
+            // Name FUNGERAR INTE
+            var personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
+            console.log(personName)
+
+
+
+            var personDays = [] // dagar från en person
+            for (let i = 0; i < 3; i++) {
+
+              var day = days[i].childNodes[0].nodeValue
+              var dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
+              console.log(day)
+              console.log(dayAnswer)
+
+
+              if (dayAnswer === '--' || dayAnswer === '-') { // fungerar inte med !== måste använda === och ha else sats FIXA
+                console.log('find another day!')
+
+              } else {
+                console.log('found day!')
+                personDays.push(day)
+              }
+            }
+            this.calendarDays.push(personDays) // fungerar inte utanför
+
+            this.possibleDays()
           })
+
+          
+          //console.log([...new Set(this.calendarDays)])
+          //break //debug endast första kalendern!
         }
+      }
+
+      possibleDays () {
+        console.log('---possibleDays startar----')
+        console.log('dagar som de olika personerna kan:')
+        console.log(this.calendarDays)
 
       }
 }
