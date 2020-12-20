@@ -70,8 +70,8 @@ export class Application extends Scraper {
         console.log('-------beginScrapingAllPages-------')
 
         // alla sidor delar skrapas separat pga olika struktur.
-        this.beginScrapeCalendar()
-        //this.scrapeCinema()
+        this.beginScrapeCalendar() // skrape cinema börjar via denna! i slutet!
+        //.scrapeCinema() 
         //this.scrapeDinner()
       }
 
@@ -178,15 +178,15 @@ export class Application extends Scraper {
         //välj ut möjliga dagar: SKAPA BÄTTRE LÖSNING!!
 
         if (fridayCount === 3) {
-          this.calendarPotentialDays.push('Friday')
+          this.calendarPotentialDays.push(5) // dagar i cinema motsvarar veckodagens siffra!
         }
 
         if (saturdayCount === 3) {
-          this.calendarPotentialDays.push('Saturday')
+          this.calendarPotentialDays.push(6) // dagar i cinema motsvarar veckodagens siffra!
         }
 
         if (sundayCount === 3) {
-          this.calendarPotentialDays.push('Sunday')
+          this.calendarPotentialDays.push(7) // dagar i cinema motsvarar veckodagens siffra!
         }
 
         /*
@@ -196,6 +196,66 @@ export class Application extends Scraper {
         */
 
         console.log(this.calendarPotentialDays)
+
+        this.scrapeCinema()
+      }
+
+      async scrapeCinema () {
+        console.log('-----börjar skrapa cinema-----')
+        const cinemaLink = this.firstPageLinks[1]
+        
+        // hämtar cinema sidans dom.
+        await new Promise((resolve, reject) => {
+          resolve(this.getScraper(cinemaLink))
+        }).then(() => {
+          console.log('Got dom from cinema page')
+          this.getCurrentMovies()
+      })
+
+
+        // skapa textsträng för get request dag och film
+
+        // 
+
+      }
+
+      getCurrentMovies () {
+        console.log('----current movies----')
+
+        const cinemaDom = new JSDOM(this.lastResponse)
+        const cinemaOption = Array.from(cinemaDom.window.document.querySelectorAll('option[value^="0"]'))//.map(HTMLAnchorElement => HTMLAnchorElement.href)
+
+        // All movies
+        const movies = cinemaOption.splice (3, cinemaOption.length)
+        const numberOfMovies = movies.length
+
+        console.log('number of movies: ', numberOfMovies)
+
+        this.createCinemaAvailabilityLinks(movies, numberOfMovies)
+      }
+
+      createCinemaAvailabilityLinks (movies, numberOfMovies) {
+        console.log('----createCinemaAvailabilityLinks----')
+        const numberOfDays = this.calendarPotentialDays.length
+        console.log(numberOfDays)
+
+        for (let i = 1; i <= numberOfDays; i++) {
+          console.log('potential day: ', i)
+          var checkDay = this.calendarPotentialDays[i - 1] // -1 pga index 0
+          console.log('day: ', checkDay)
+          console.log('number of movies: ', numberOfMovies)
+
+          // skapa länk
+          const firstRequestPart = 'check?day=0'
+          const thirdRequestPart = '&movie=0'
+
+          for (let a = 1; a <= numberOfMovies; a++) { // skapar alla relativa get länkar.
+          var requestLink = firstRequestPart.concat(checkDay).concat(thirdRequestPart).concat(a)
+          console.log(requestLink)
+          }
+
+          
+        }
 
       }
 }
