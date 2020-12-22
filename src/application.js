@@ -22,6 +22,8 @@ export class Application extends Scraper {
       this.calendarDays // alla personers möjliga dagar i separata arrayer
       this.calendarPotentialDays = [] // möjliga dagar enligt kalender
       this.cinemaRequestLinks = [] // links used to request movies from cinema.
+      this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
+      this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -271,9 +273,43 @@ export class Application extends Scraper {
             resolve(this.getScraper(this.cinemaRequestLinks[i]))
           }).then(() => {
             console.log('A cinema get request resolved!')
-          })
 
+            // spara alla objekt svar:
+
+            const parseResponse = JSON.parse(this.lastResponse)
+
+            console.log('-----------')
+            //console.log(parseResponse)
+            console.log('-----------')
+
+            this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // combines new response with old results
+
+            console.log(this.cinemaPossibleDaysAllTimes)
+
+
+
+
+          })}
+        
+        this.addPotentialTimesToArray()
+      }
+
+      addPotentialTimesToArray () {
+        console.log('------------lägg till möjliga tider---------')
+        
+        const numberOfTimes = this.cinemaPossibleDaysAllTimes.length
+        console.log(numberOfTimes) // visar ibland 36 ist för 9 BUGG???
+
+        for (let i = 0; i < numberOfTimes; i++) {
+          if (this.cinemaPossibleDaysAllTimes[i].status === 0) { // om tiden är tillgänglig
+            this.cinemaPossibleTimes = this.cinemaPossibleTimes.concat(this.cinemaPossibleDaysAllTimes[i]) // lägger till dagen om den är möjlig i cinemaPossibleTimes
+          }
         }
 
+        console.log('---möjliga tider----')
+        console.log(this.cinemaPossibleTimes)
+        console.log('number of possible times: ', this.cinemaPossibleTimes.length)
+        console.log('---möjliga tider----')
+        
       }
 }
