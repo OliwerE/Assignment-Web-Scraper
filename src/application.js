@@ -360,11 +360,27 @@ export class Application extends Scraper {
           resolve(this.postLoginScraper(this.absoluteZekeLogin, loginInfo)) // skrapar första sidan i zeke's bar
         }).then(() => {
           console.log('------post response----')
-
           console.log(this.lastResponse)
           //console.log(this.lastResponse.headers.get('set-cookie') )
-
           console.log('------post response----')
+          this.modifyPostResponse()
         })
+      }
+
+      modifyPostResponse () {
+        const relativeUrl = this.lastResponse[0]
+        const responseCookie = this.lastResponse[1]
+
+        // create absolute url
+
+        const absoluteUrl = this.firstPageLinks[2].concat(relativeUrl)
+        console.log(absoluteUrl)
+
+        // extract cookie
+
+        const splitCookie = responseCookie.split('; ')
+        const fixedCookie = splitCookie[0]
+
+        console.log(fixedCookie)
       }
 }
