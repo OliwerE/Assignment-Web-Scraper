@@ -270,7 +270,7 @@ export class Application extends Scraper {
       async scrapePotentialCinemaDays () {
         console.log('-----scrape cinema days-----')
 
-        for (let i = 0; i < this.cinemaRequestLinks.length; i++) {
+        for (let i = 0; i < this.cinemaRequestLinks.length; i++) { // BUGGEN???
 
           await new Promise((resolve, reject) => {
             resolve(this.getScraper(this.cinemaRequestLinks[i]))
@@ -289,12 +289,12 @@ export class Application extends Scraper {
 
             console.log(this.cinemaPossibleDaysAllTimes)
 
-
+            this.addPotentialTimesToArray() // var utanför innan
 
 
           })}
         
-        this.addPotentialTimesToArray()
+        // this.addPotentialTimesToArray()
       }
 
       addPotentialTimesToArray () {
@@ -399,12 +399,12 @@ export class Application extends Scraper {
           console.log('------booking response----')
           //console.log(this.lastResponse)
           console.log('------/booking response----')
-          this.getPotentialZekeBookingTimes()
+          this.getAllZekeBookingTimes()
         })
       }
 
       getAllZekeBookingTimes () { // inkl fullbokade
-        console.log('------getPotentialZekeBookingTimes-----')
+        console.log('------getAllZekeBookingTimes-----')
         const zekeBookingDom = new JSDOM(this.lastResponse)
 
         //const potentialTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection2"] span')) // WordSection2, 4, 6 är tiderna!
@@ -412,7 +412,7 @@ export class Application extends Scraper {
 
         this.zekeAllTimes = []
         for (let i = 5; i < 8; i++) { // 5-7 = fre-sön
-          console.log(i)
+          //console.log(i)
 
 
 
@@ -429,7 +429,7 @@ export class Application extends Scraper {
           this.zekeAllTimes = this.zekeAllTimes.concat(AllTimes)
 
 
-          console.log(AllTimes)
+          //console.log(AllTimes)
 
 
         }
@@ -438,11 +438,28 @@ export class Application extends Scraper {
         console.log('allnodes length: ', this.zekeAllTimes.length)
         console.log('------all nodes------')
 
+        // gör om till strings:
+        let freeCount = 0
+        for (let i = 0; i < this.zekeAllTimes.length; i++) {
+          //console.log(i)
 
-        //const potentialTimes = zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection2"')
+          let splitted = this.zekeAllTimes[i].childNodes[0].nodeValue.split(' F')
+          console.log(splitted)
 
-        //console.log(potentialTimes[3].childNodes[0].nodeValue)
-        //console.log(potentialTimes)
-        console.log('------getPotentialZekeBookingTimes-----')
+          
+          if (splitted[1] === 'ree\n          ') { // om bord är ledigt
+            freeCount += 1
+            
+          }
+          
+
+
+        }
+
+        console.log('antal möjliga alternativ: ', freeCount)
+
+
+
+        console.log('------getAllZekeBookingTimes-----')
       }
 }

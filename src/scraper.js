@@ -25,7 +25,7 @@ export class Scraper {
       return response.text()
     }).then(text => {
       this.lastResponse = text
-      console.log(this.lastResponse) // visar respons
+      //console.log(this.lastResponse) // visar respons
     }).catch(err => {
       console.log('Node fetch (getScraper) error: ', err)
     })
