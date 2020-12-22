@@ -26,6 +26,7 @@ export class Application extends Scraper {
       this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
       this.absoluteZekeLogin // absoluta länken för att skicka post request till login
       this.getRequestDataZeke // array med zeke booking länk och session cookie
+      this.zekeAllTimes // Alla tider zekes bar tider, även fullbokade
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -398,6 +399,50 @@ export class Application extends Scraper {
           console.log('------booking response----')
           //console.log(this.lastResponse)
           console.log('------/booking response----')
+          this.getPotentialZekeBookingTimes()
         })
+      }
+
+      getAllZekeBookingTimes () { // inkl fullbokade
+        console.log('------getPotentialZekeBookingTimes-----')
+        const zekeBookingDom = new JSDOM(this.lastResponse)
+
+        //const potentialTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection2"] span')) // WordSection2, 4, 6 är tiderna!
+
+
+        this.zekeAllTimes = []
+        for (let i = 5; i < 8; i++) { // 5-7 = fre-sön
+          console.log(i)
+
+
+
+          let wordSectionNumber
+          if (i === 5) {
+            wordSectionNumber = 2
+          } else if (i === 6) {
+            wordSectionNumber = 4
+          } else if (i === 7) {
+            wordSectionNumber = 6
+          }
+          var AllTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection' + wordSectionNumber + '"] span')) // WordSection2, 4, 6 är tiderna!
+
+          this.zekeAllTimes = this.zekeAllTimes.concat(AllTimes)
+
+
+          console.log(AllTimes)
+
+
+        }
+        console.log('------all nodes------')
+        console.log(this.zekeAllTimes)
+        console.log('allnodes length: ', this.zekeAllTimes.length)
+        console.log('------all nodes------')
+
+
+        //const potentialTimes = zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection2"')
+
+        //console.log(potentialTimes[3].childNodes[0].nodeValue)
+        //console.log(potentialTimes)
+        console.log('------getPotentialZekeBookingTimes-----')
       }
 }
