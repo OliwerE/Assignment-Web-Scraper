@@ -342,8 +342,29 @@ export class Application extends Scraper {
           
           console.log(this.absoluteZekeLogin)
 
+          this.getZekeSessionToken()
 
         })
 
+      }
+
+      async getZekeSessionToken () {
+        console.log('----- get zeke session token -----')
+
+        const loginInfo = { // flytta???
+          "username": "zeke",
+          "password": "coys"
+        }
+
+        await new Promise((resolve, reject) => {
+          resolve(this.postLoginScraper(this.absoluteZekeLogin, loginInfo)) // skrapar första sidan i zeke's bar
+        }).then(() => {
+          console.log('------post response----')
+
+          console.log(this.lastResponse)
+          //console.log(this.lastResponse.headers.get('set-cookie') )
+
+          console.log('------post response----')
+        })
       }
 }

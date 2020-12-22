@@ -27,4 +27,29 @@ export class Scraper {
 
   }
 
+  async postLoginScraper (url, login) { // kör node fetch med current url här!
+    console.log('begins post scraper')
+    
+    await fetch(url, {
+      method: "post",
+      redirect: "allow",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify(login)
+    }).then(response =>  {
+
+      //console.log(response.headers.get('set-cookie'))
+      ////console.log('-----')
+      //console.log(response.headers.get('location'))
+
+    return response
+    }).then(response => {
+      this.lastResponse = [response.headers.get('location'), response.headers.get('set-cookie')] // array med relativ url till bokning och en aktiv session cookie
+    }).catch(err => {
+    console.error('an error has occurred (post)')
+    console.error(err)
+    })
+  }
+
 }
