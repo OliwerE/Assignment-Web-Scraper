@@ -311,5 +311,25 @@ export class Application extends Scraper {
         console.log('number of possible times: ', this.cinemaPossibleTimes.length)
         console.log('---möjliga tider----')
         
+
+        this.beginScrapingDinner()
+
+      }
+
+      beginScrapingDinner () {
+        console.log('beginScrapingDinner')
+        this.scrapeDinnerFirstPage()
+      }
+
+      async scrapeDinnerFirstPage () {
+        console.log('scrapeDinnerFirstPage')
+
+        await new Promise((resolve, reject) => {
+          resolve(this.getScraper(this.firstPageLinks[2])) // skrapar första sidan i zeke's bar
+        }).then(() => {
+          console.log('A zeke get request resolved!')
+
+        })
+
       }
 }
