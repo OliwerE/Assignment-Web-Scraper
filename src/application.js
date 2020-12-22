@@ -24,6 +24,7 @@ export class Application extends Scraper {
       this.cinemaRequestLinks = [] // links used to request movies from cinema.
       this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
       this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
+      this.absoluteZekeLogin // absoluta länken för att skicka post request till login
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -328,6 +329,19 @@ export class Application extends Scraper {
           resolve(this.getScraper(this.firstPageLinks[2])) // skrapar första sidan i zeke's bar
         }).then(() => {
           console.log('A zeke get request resolved!')
+
+          //build dom
+          const zekeStart = new JSDOM(this.lastResponse)
+
+          // extract login relative link
+          const loginPostLinkAction = Array.from(zekeStart.window.document.querySelectorAll('form[action^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.action)
+          
+          // build login link
+          const relativeSpliced = loginPostLinkAction[0].slice(2)
+          this.absoluteZekeLogin = this.firstPageLinks[2].concat(relativeSpliced)
+          
+          console.log(this.absoluteZekeLogin)
+
 
         })
 
