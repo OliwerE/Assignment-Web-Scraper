@@ -25,6 +25,7 @@ export class Application extends Scraper {
       this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
       this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
       this.absoluteZekeLogin // absoluta länken för att skicka post request till login
+      this.getRequestDataZeke // array med zeke booking länk och session cookie
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -382,5 +383,21 @@ export class Application extends Scraper {
         const fixedCookie = splitCookie[0]
 
         console.log(fixedCookie)
+
+        this.getRequestDataZeke = [absoluteUrl, fixedCookie]
+
+        this.scrapeDinnerBooking()
+      }
+
+      async scrapeDinnerBooking () {
+        console.log('----- Scrape dinner booking begins -----')
+
+        await new Promise((resolve, reject) => {
+          resolve(this.getScraper(this.getRequestDataZeke[0], this.getRequestDataZeke[1])) // skrapar första sidan i zeke's bar
+        }).then(() => {
+          console.log('------booking response----')
+          //console.log(this.lastResponse)
+          console.log('------/booking response----')
+        })
       }
 }

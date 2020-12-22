@@ -13,10 +13,15 @@ export class Scraper {
       this.lastResponse // respons
   }
 
-  async getScraper (url) { // kör node fetch med current url här!
+  async getScraper (url, cookie) { // kör node fetch med current url här!
     console.log('begins node fetch')
 
-    const scraper = await fetch(url).then(response => {
+    const scraper = await fetch(url, { // Sends user answer to server using fetch api.
+      method: 'get',
+      headers: {
+        cookie: cookie
+      }
+      }).then(response => {
       return response.text()
     }).then(text => {
       this.lastResponse = text
