@@ -18,6 +18,10 @@ export class Calendar {
     this.calendarPotentialDays = [] // möjliga dagar enligt kalender
     this.scraper = new Scraper()
 
+    // flyttade från application.js
+    this.calendarDays // alla personers möjliga dagar i separata arrayer
+    this.calendarPotentialDays = [] // möjliga dagar enligt kalender
+
   }
 
 

@@ -1,5 +1,5 @@
 /**
- * Module for Calendar scraping.
+ * Module for Cinema scraping.
  *
  * @author Oliwer Ellréus <oe222ez@student.lnu.se>
  * @version 1.0.0
@@ -18,9 +18,9 @@ export class Cinema {
       //this.cinemaFirstPageResponse = cinemaFirstPageResponse // startsida cinema  // ANVÄNDS EJ
       this.calendarPotentialDays = calendarPotentialDays // kalender möjliga dagar
       this.cinemaFirstPageAbsoluteLink = firstPageLink // absoluta länken till cinemas startsida
-      this.cinemaRequestLinks = []
-      this.cinemaPossibleDaysAllTimes = [] // alla tider på möjliga dagar
-      this.cinemaPossibleTimes = [] // möjliga tider
+      this.cinemaRequestLinks = [] // links used to request movies from cinema.
+      this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
+      this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
     }
 
     async start () {
