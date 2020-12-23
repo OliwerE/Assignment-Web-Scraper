@@ -12,9 +12,15 @@ import { JSDOM } from 'jsdom'
 
 import {Scraper} from './scraper.js'
 
+import {Calendar} from './calendar.js'
+
 export class Application extends Scraper {
     constructor (startUrl) {
       super()
+
+      this.calendar 
+
+
       this.startUrl = startUrl
       this.firstPageLinks // länkarna på första sidan
       this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
@@ -33,6 +39,7 @@ export class Application extends Scraper {
     async firstScrape () {
     console.log('calls scraper first links')
 
+    
 
     // promise väntar på första url html skrapas
     await new Promise((resolve, reject) => {
@@ -41,7 +48,7 @@ export class Application extends Scraper {
       console.log('first links resolved!')
       this.getFirstLinks()
     })
-
+    
   }
 
     getFirstLinks(typeOfData) { // tar ut första länkarna på startsidan och kalender (om typeOfData är firstLinksCalendar)
@@ -72,138 +79,45 @@ export class Application extends Scraper {
 
       }
 
-      beginScrapingAllPages () {
+      beginScrapingAllPages () {  // GLÖMT FORTSÄTTA MED DENNA!!
         console.log('-------beginScrapingAllPages-------')
 
         // alla sidor delar skrapas separat pga olika struktur.
         this.beginScrapeCalendar() // skrape cinema börjar via denna! i slutet!
+
+
         //.scrapeCinema() 
         //this.scrapeDinner()
       }
 
       async beginScrapeCalendar () {
+        this.calendar = new Calendar(this.firstPageLinks[0]) // skapar instans av calendar
+      
+     console.log('------------------------------start kalender-------------------')
+      await new Promise((resolve, reject) => { // fungerar nu!
+      resolve(this.calendar.start())
+    }).then(() => {
+      console.log('-----Calendar module finished!!-----')
 
-      // promise väntar på första sidan i kalender html
-      await new Promise((resolve, reject) => {
-        resolve(this.getScraper(this.firstPageLinks[0]))
-      }).then(() => {
-        console.log('first links CALENDAR resolved!, starts creating links!')
-        this.getFirstLinks('firstLinksCalendar')
-    }).then (() => {
-      console.log('personal calendar links created!')
-      this.scrapeAllCalendars()
+      // starta cinema skrapning här:
+
+      this.scrapeCinema()
+
     })
+
+     
+      }
+
+      test() {
+
       }
 
       async scrapeAllCalendars () {
-        console.log('-----starts scrapeAllCalendars------')
-        console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
-        console.log(this.calendarFirstPageLinks.length)
 
-
-        this.calendarDays  = [] // array with all persons possible days
-        for(let i = 0; i < this.calendarFirstPageLinks.length; i++) {
-          console.log('skrapa kalender länk', i)
-
-          await new Promise((resolve, reject) => {
-            resolve(this.getScraper(this.calendarFirstPageLinks[i]))
-          }).then(() => {
-            console.log('person', i, 'calendar scraped!')
-
-            // lägg till alla dagar i array:
-            const calendarDom = new JSDOM(this.lastResponse)
-            const days = Array.from(calendarDom.window.document.querySelectorAll('th'))//.map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
-            const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td'))//.map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
-            
-            // Name FUNGERAR INTE
-            var personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
-            console.log(personName)
-
-
-
-            var personDays = [] // dagar från en person
-            for (let i = 0; i < 3; i++) {
-
-              var day = days[i].childNodes[0].nodeValue
-              var dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
-              console.log(day)
-              console.log(dayAnswer)
-
-
-              if (dayAnswer === '--' || dayAnswer === '-') { // fungerar inte med !== måste använda === och ha else sats FIXA
-                console.log('find another day!')
-
-              } else {
-                console.log('found day!')
-                personDays.push(day)
-              }
-            }
-            this.calendarDays.push(personDays) // fungerar inte utanför
-
-            this.possibleDays()
-          })
-
-          
-          //console.log([...new Set(this.calendarDays)])
-          //break //debug endast första kalendern!
-        }
       }
 
       possibleDays () {
-        console.log('---possibleDays startar----')
-        console.log('dagar som de olika personerna kan:')
-        console.log(this.calendarDays)
 
-        // dagarna antal ggr (gör om till objekt??)
-        var fridayCount = 0
-        var saturdayCount = 0
-        var sundayCount = 0
-
-        // gå igenom arrayer ta reda på vilka dagar som förekommer 3 ggr:
-
-        for (let i = 0; i < this.calendarDays.length; i++) { // loop igenom alla arrayer i array och räkna antal ggr varje dag förekommer. 3ggr = alla kan!
-          //console.log(i)
-          var arrayLength = this.calendarDays[i].length
-          //console.log(arrayLength)
-
-          for (let a = 0; a < arrayLength; a++) {
-            var indexDay = this.calendarDays[i][a] // a day in a persons array
-            //console.log(indexDay)
-            if (indexDay === 'Friday') {
-              fridayCount += 1
-            } else if (indexDay === 'Saturday') {
-              saturdayCount += 1
-          } else if (indexDay === 'Sunday') {
-            sundayCount += 1
-          }
-
-          }
-        }
-        console.log('friday: ', fridayCount, 'saturday: ', saturdayCount, 'sunday: ', sundayCount)
-
-        //välj ut möjliga dagar: SKAPA BÄTTRE LÖSNING!!
-
-        if (fridayCount === 3) {
-          this.calendarPotentialDays.push(5) // dagar i cinema motsvarar veckodagens siffra!
-        }
-
-        if (saturdayCount === 3) {
-          this.calendarPotentialDays.push(6) // dagar i cinema motsvarar veckodagens siffra!
-        }
-
-        if (sundayCount === 3) {
-          this.calendarPotentialDays.push(7) // dagar i cinema motsvarar veckodagens siffra!
-        }
-
-        /*
-        if (fridayCount !== 3 && saturdayCount !== 3 && sundayCount !== 3) {
-          throw new Error('ingen dag möjlig!')
-        }
-        */
-
-        console.log(this.calendarPotentialDays)
-
-        this.scrapeCinema()
       }
 
       async scrapeCinema () {
@@ -242,12 +156,23 @@ export class Application extends Scraper {
 
       createCinemaAvailabilityLinks (movies, numberOfMovies) {
         console.log('----createCinemaAvailabilityLinks----')
-        const numberOfDays = this.calendarPotentialDays.length
+        const numberOfDays = this.calendar.calendarPotentialDays.length
         console.log(numberOfDays)
 
         for (let i = 1; i <= numberOfDays; i++) {
           console.log('potential day: ', i)
-          var checkDay = this.calendarPotentialDays[i - 1] // -1 pga index 0
+
+          /*
+          console.log('DEBUG--------------------------------------------------------------------')
+
+          console.log(this.calendar.calendarPotentialDays)
+
+
+          console.log('DEBUG-----------------------------------------------------------------------')
+          */
+
+
+          var checkDay = this.calendar.calendarPotentialDays[i - 1] // -1 pga index 0
           console.log('day: ', checkDay)
           console.log('number of movies: ', numberOfMovies)
 
