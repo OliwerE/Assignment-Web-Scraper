@@ -13,12 +13,14 @@ import { JSDOM } from 'jsdom'
 import {Scraper} from './scraper.js'
 
 import {Calendar} from './calendar.js'
+import {Cinema} from './cinema.js'
 
 export class Application extends Scraper {
     constructor (startUrl) {
       super()
 
-      this.calendar 
+      this.calendar // instans av calendar modul
+      this.cinema // instans av cinema modul
 
 
       this.startUrl = startUrl
@@ -57,7 +59,7 @@ export class Application extends Scraper {
       console.log('first links')
       
 
-      if(typeOfData === 'firstLinksCalendar') {
+      if(typeOfData === 'firstLinksCalendar') { // kan ta bort if satsen?? är flyttad till calendar module
         const relativeLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
         console.log('KALENDER GET FIRST LINKS!')
         //this.scrapeAllCalendars()
@@ -103,145 +105,28 @@ export class Application extends Scraper {
 
       this.scrapeCinema()
 
-    })
-
-     
-      }
-
-      test() {
-
-      }
-
-      async scrapeAllCalendars () {
-
-      }
-
-      possibleDays () {
-
-      }
-
-      async scrapeCinema () {
-        console.log('-----börjar skrapa cinema-----')
-        const cinemaLink = this.firstPageLinks[1]
-        
-        // hämtar cinema sidans dom.
-        await new Promise((resolve, reject) => {
-          resolve(this.getScraper(cinemaLink))
-        }).then(() => {
-          console.log('Got dom from cinema page')
-          this.getCurrentMovies()
-      })
-
-
-        // skapa textsträng för get request dag och film
-
-        // 
-
-      }
-
-      getCurrentMovies () {
-        console.log('----current movies----')
-
-        const cinemaDom = new JSDOM(this.lastResponse)
-        const cinemaOption = Array.from(cinemaDom.window.document.querySelectorAll('option[value^="0"]'))//.map(HTMLAnchorElement => HTMLAnchorElement.href)
-
-        // All movies
-        const movies = cinemaOption.splice (3, cinemaOption.length)
-        const numberOfMovies = movies.length
-
-        console.log('number of movies: ', numberOfMovies)
-
-        this.createCinemaAvailabilityLinks(movies, numberOfMovies)
-      }
-
-      createCinemaAvailabilityLinks (movies, numberOfMovies) {
-        console.log('----createCinemaAvailabilityLinks----')
-        const numberOfDays = this.calendar.calendarPotentialDays.length
-        console.log(numberOfDays)
-
-        for (let i = 1; i <= numberOfDays; i++) {
-          console.log('potential day: ', i)
-
-          /*
-          console.log('DEBUG--------------------------------------------------------------------')
-
-          console.log(this.calendar.calendarPotentialDays)
-
-
-          console.log('DEBUG-----------------------------------------------------------------------')
-          */
-
-
-          var checkDay = this.calendar.calendarPotentialDays[i - 1] // -1 pga index 0
-          console.log('day: ', checkDay)
-          console.log('number of movies: ', numberOfMovies)
-
-          // skapa länk
-          const firstRequestPart = 'check?day=0'
-          const thirdRequestPart = '&movie=0'
-
-          for (let a = 1; a <= numberOfMovies; a++) { // skapar alla relativa get länkar.
-          var requestLink = this.firstPageLinks[1].concat('/').concat(firstRequestPart).concat(checkDay).concat(thirdRequestPart).concat(a)
-          this.cinemaRequestLinks.push(requestLink)
-          //console.log(requestLink)
-          }
-
-          
-        }
-        console.log(this.cinemaRequestLinks)
-        this.scrapePotentialCinemaDays()
-      }
+    })  
+    }
       
-      async scrapePotentialCinemaDays () {
-        console.log('-----scrape cinema days-----')
+    
+      async scrapeCinema () {
 
-        for (let i = 0; i < this.cinemaRequestLinks.length; i++) { // BUGGEN???
+        this.cinema = new Cinema(this.lastResponse, this.calendar.calendarPotentialDays, this.firstPageLinks[1])
 
-          await new Promise((resolve, reject) => {
-            resolve(this.getScraper(this.cinemaRequestLinks[i]))
-          }).then(() => {
-            console.log('A cinema get request resolved!')
+        // gör om till promise???
+        //this.cinema.start() // get response, calendarPotentialDays, startsidan länk
 
-            // spara alla objekt svar:
-
-            const parseResponse = JSON.parse(this.lastResponse)
-
-            console.log('-----------')
-            //console.log(parseResponse)
-            console.log('-----------')
-
-            this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // combines new response with old results
-
-            console.log(this.cinemaPossibleDaysAllTimes)
-
-            this.addPotentialTimesToArray() // var utanför innan
-
-
-          })}
-        
-        // this.addPotentialTimesToArray()
-      }
-
-      addPotentialTimesToArray () {
-        console.log('------------lägg till möjliga tider---------')
-        
-        const numberOfTimes = this.cinemaPossibleDaysAllTimes.length
-        console.log(numberOfTimes) // visar ibland 36 ist för 9 BUGG???
-
-        for (let i = 0; i < numberOfTimes; i++) {
-          if (this.cinemaPossibleDaysAllTimes[i].status === 0) { // om tiden är tillgänglig
-            this.cinemaPossibleTimes = this.cinemaPossibleTimes.concat(this.cinemaPossibleDaysAllTimes[i]) // lägger till dagen om den är möjlig i cinemaPossibleTimes
-          }
-        }
-
-        console.log('---möjliga tider----')
-        console.log(this.cinemaPossibleTimes)
-        console.log('number of possible times: ', this.cinemaPossibleTimes.length)
-        console.log('---möjliga tider----')
-        
-
+        console.log('------------------------------start CINEMA-------------------')
+        await new Promise((resolve, reject) => { // fungerar nu!
+        resolve(this.cinema.start())
+      }).then(() => {
+        console.log('-----CINEMA module finished!!-----')
+  
+        // starta cinema skrapning här:
+  
         this.beginScrapingDinner()
-
+  
+      })          
       }
 
       beginScrapingDinner () {
