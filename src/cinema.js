@@ -29,6 +29,7 @@ export class Cinema {
       this.getNumberOfMovies()
       // this.createCinemaAvailabilityLinks(movies, numberOfMovies) anropas via getNumberOfMovies!
       await this.scrapePotentialCinemaDays()
+      this.addPotentialTimesToArray()
 
     }
 
@@ -119,7 +120,7 @@ export class Cinema {
           console.log('all days:')
           console.log(this.cinemaPossibleDaysAllTimes)
 
-          this.addPotentialTimesToArray() // var utanför innan BUGG HÄR! OBS!
+          // this.addPotentialTimesToArray() // var utanför innan BUGG HÄR! flyttad till start!
 
 
         })
