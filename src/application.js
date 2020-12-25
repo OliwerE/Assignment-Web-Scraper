@@ -4,16 +4,13 @@
  * @author Oliwer Ellréus <oe222ez@student.lnu.se>
  * @version 1.0.0
  */
-
-import * as suggestion from './suggestion.js'
-
 import {JSDOM} from 'jsdom'
-
 import {Scraper} from './scraper.js'
 
 import {Calendar} from './calendar.js'
 import {Cinema} from './cinema.js'
 import {Restaurant} from './restaurant.js'
+import {Suggestion} from './suggestion.js'
 
 export class Application extends Scraper { // ta bort extends Scraper när allt är flyttat till moduler
     constructor (startUrl) {
@@ -22,6 +19,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
       this.calendar // instans av calendar modul
       this.cinema // instans av cinema modul
       this.restaurant // instans av restaurant modul
+      this.suggestion // displays suggestions
 
 
       this.startUrl = startUrl
@@ -234,6 +232,9 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
 
         console.log(this.alternatives)
         // gå till suggestion.js
+
+        this.suggestion = new Suggestion(this.alternatives)
+        this.suggestion.start()
 
         // console.log(this.cinema.movieNames[2].childNodes[0].nodeValue) // filmnamnen!
 
