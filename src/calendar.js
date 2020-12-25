@@ -6,13 +6,19 @@
  */
 
 import { JSDOM } from 'jsdom'
-import {Scraper} from './scraper.js'
+import { Scraper } from './scraper.js'
 
-//import webScraper from './app.js'
+// import webScraper from './app.js'
 
-//import * as application from './application.js'
+// import * as application from './application.js'
 
+/**
+ *
+ */
 export class Calendar {
+  /**
+   * @param link
+   */
   constructor (link) {
     this.link = link
     this.calendarPotentialDays = [] // möjliga dagar enligt kalender
@@ -21,141 +27,132 @@ export class Calendar {
     // flyttade från application.js
     this.calendarDays // alla personers möjliga dagar i separata arrayer
     this.calendarPotentialDays = [] // möjliga dagar enligt kalender
-
   }
 
+  /**
+   *
+   */
+  async start () {
+    // console.log('calendar class started')
 
-   async start () {
-    //console.log('calendar class started')
-
-    
     // await saknades på async funk! LÖST!
     await this.scraper.getScraper(this.link)
     this.getFirstLinks()
     await this.scrapeAllCalendars()
-    
-
   }
 
-  getFirstLinks() {
-    //console.log('getFIRSTLinks startar')
+  /**
+   *
+   */
+  getFirstLinks () {
+    // console.log('getFIRSTLinks startar')
     const startDom = new JSDOM(this.scraper.lastResponse)
-    //console.log('first links')
-    
-      const relativeLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
-      //console.log('KALENDER GET FIRST LINKS!')
-      //this.scrapeAllCalendars()
+    // console.log('first links')
 
-      //bygg absoluta länkar här:
-      //console.log('number of links:', relativeLinks.length)
+    const relativeLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
+    // console.log('KALENDER GET FIRST LINKS!')
+    // this.scrapeAllCalendars()
 
-      this.calendarFirstPageLinks = []
-      
-      for (let i = 0; i < relativeLinks.length; i++) {
-        //console.log('calendar link: ', i)
-        this.calendarFirstPageLinks[i] = this.link.concat(relativeLinks[i].slice(2)) // creates absolute link
-      }
+    // bygg absoluta länkar här:
+    // console.log('number of links:', relativeLinks.length)
 
+    this.calendarFirstPageLinks = []
+
+    for (let i = 0; i < relativeLinks.length; i++) {
+      // console.log('calendar link: ', i)
+      this.calendarFirstPageLinks[i] = this.link.concat(relativeLinks[i].slice(2)) // creates absolute link
     }
+  }
 
+  /**
+   *
+   */
   async scrapeAllCalendars () {
+    // console.log('-----starts scrapeAllCalendars------')
+    // console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
+    // console.log(this.calendarFirstPageLinks.length)
 
-    //console.log('-----starts scrapeAllCalendars------')
-    //console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
-    //console.log(this.calendarFirstPageLinks.length)
+    this.calendarDays = [] // array with all persons possible days
+    for (let i = 0; i < this.calendarFirstPageLinks.length; i++) {
+      // console.log('skrapa kalender länk', i)
 
-
-    this.calendarDays  = [] // array with all persons possible days
-    for(let i = 0; i < this.calendarFirstPageLinks.length; i++) {
-      //console.log('skrapa kalender länk', i)
-
-
-      
       await new Promise((resolve, reject) => { // gör om till "bara" await getscraper ?? utan promise
         resolve(this.scraper.getScraper(this.calendarFirstPageLinks[i]))
       }).then(() => {
-        
-        
-       //await this.scraper.getScraper(this.calendarFirstPageLinks[i])
+        // await this.scraper.getScraper(this.calendarFirstPageLinks[i])
 
-        //console.log('person', i, 'calendar scraped!')
+        // console.log('person', i, 'calendar scraped!')
 
         // lägg till alla dagar i array:
         const calendarDom = new JSDOM(this.scraper.lastResponse)
-        const days = Array.from(calendarDom.window.document.querySelectorAll('th'))//.map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
-        const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td'))//.map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
-        
+        const days = Array.from(calendarDom.window.document.querySelectorAll('th'))// .map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
+        const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td'))// .map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
+
         // Name FUNGERAR INTE
-        var personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
-        //console.log(personName)
+        const personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
+        // console.log(personName)
 
-
-
-        var personDays = [] // dagar från en person
+        const personDays = [] // dagar från en person
         for (let i = 0; i < 3; i++) {
-
-          var day = days[i].childNodes[0].nodeValue
-          var dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
-          //console.log(day)
-          //console.log(dayAnswer)
-
+          const day = days[i].childNodes[0].nodeValue
+          const dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
+          // console.log(day)
+          // console.log(dayAnswer)
 
           if (dayAnswer === '--' || dayAnswer === '-') { // fungerar inte med !== måste använda === och ha else sats FIXA
-            //console.log('find another day!')
+            // console.log('find another day!')
 
           } else {
-            //console.log('found day!')
+            // console.log('found day!')
             personDays.push(day)
           }
         }
         this.calendarDays.push(personDays) // fungerar inte utanför
 
-        //console.log('SCRAPE ALL CALENDARS SLUT')
+        // console.log('SCRAPE ALL CALENDARS SLUT')
         this.possibleDays()
       })
 
-      
-      //console.log([...new Set(this.calendarDays)])
-      //break //debug endast första kalendern!
-
-
+      // console.log([...new Set(this.calendarDays)])
+      // break //debug endast första kalendern!
     }
-
   }
 
+  /**
+   *
+   */
   possibleDays () {
-    //console.log('---possibleDays startar----')
-    //console.log('dagar som de olika personerna kan:')
-    //console.log(this.calendarDays)
+    // console.log('---possibleDays startar----')
+    // console.log('dagar som de olika personerna kan:')
+    // console.log(this.calendarDays)
 
     // dagarna antal ggr (gör om till objekt??)
-    var fridayCount = 0
-    var saturdayCount = 0
-    var sundayCount = 0
+    let fridayCount = 0
+    let saturdayCount = 0
+    let sundayCount = 0
 
     // gå igenom arrayer ta reda på vilka dagar som förekommer 3 ggr:
 
     for (let i = 0; i < this.calendarDays.length; i++) { // loop igenom alla arrayer i array och räkna antal ggr varje dag förekommer. 3ggr = alla kan!
-      //console.log(i)
-      var arrayLength = this.calendarDays[i].length
-      //console.log(arrayLength)
+      // console.log(i)
+      const arrayLength = this.calendarDays[i].length
+      // console.log(arrayLength)
 
       for (let a = 0; a < arrayLength; a++) {
-        var indexDay = this.calendarDays[i][a] // a day in a persons array
-        //console.log(indexDay)
+        const indexDay = this.calendarDays[i][a] // a day in a persons array
+        // console.log(indexDay)
         if (indexDay === 'Friday') {
           fridayCount += 1
         } else if (indexDay === 'Saturday') {
           saturdayCount += 1
-      } else if (indexDay === 'Sunday') {
-        sundayCount += 1
-      }
-
+        } else if (indexDay === 'Sunday') {
+          sundayCount += 1
+        }
       }
     }
-    //console.log('friday: ', fridayCount, 'saturday: ', saturdayCount, 'sunday: ', sundayCount)
+    // console.log('friday: ', fridayCount, 'saturday: ', saturdayCount, 'sunday: ', sundayCount)
 
-    //välj ut möjliga dagar: SKAPA BÄTTRE LÖSNING!!
+    // välj ut möjliga dagar: SKAPA BÄTTRE LÖSNING!!
 
     if (fridayCount === 3) {
       this.calendarPotentialDays.push(5) // dagar i cinema motsvarar veckodagens siffra!
@@ -175,11 +172,9 @@ export class Calendar {
     }
     */
 
-    //console.log(this.calendarPotentialDays)
+    // console.log(this.calendarPotentialDays)
 
-
-    //console.log('-----slut calendar modul-----')
-    //this.scrapeCinema() // LÖS PÅ ANNAT SÄTT FÖR ATT FORTSÄTTA!
+    // console.log('-----slut calendar modul-----')
+    // this.scrapeCinema() // LÖS PÅ ANNAT SÄTT FÖR ATT FORTSÄTTA!
   }
-
 }

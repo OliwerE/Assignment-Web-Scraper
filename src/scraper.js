@@ -6,55 +6,66 @@
  */
 
 import fetch from 'node-fetch'
-//import { JSDOM } from 'jsdom'
+// import { JSDOM } from 'jsdom'
 
+/**
+ *
+ */
 export class Scraper {
+  /**
+   *
+   */
   constructor () {
-      this.lastResponse // respons
+    this.lastResponse // respons
   }
 
+  /**
+   * @param url
+   * @param cookie
+   */
   async getScraper (url, cookie) { // kör node fetch med current url här!
-    //console.log('begins node fetch')
+    // console.log('begins node fetch')
 
     const scraper = await fetch(url, { // Sends user answer to server using fetch api.
       method: 'get',
       headers: {
         cookie: cookie
       }
-      }).then(response => {
+    }).then(response => {
       return response.text()
     }).then(text => {
       this.lastResponse = text
-      //console.log(this.lastResponse) // visar respons
+      // console.log(this.lastResponse) // visar respons
     }).catch(err => {
       console.log('Node fetch (getScraper) error: ', err)
     })
-
   }
 
+  /**
+   * @param url
+   * @param login
+   */
   async postLoginScraper (url, login) { // kör node fetch med current url här!
-    //console.log('begins post scraper')
-    
+    // console.log('begins post scraper')
+
     await fetch(url, {
-      method: "post",
-      redirect: "allow",
+      method: 'post',
+      redirect: 'allow',
       headers: {
-          "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(login)
-    }).then(response =>  {
+    }).then(response => {
+      // console.log(response.headers.get('set-cookie'))
+      /// /console.log('-----')
+      // console.log(response.headers.get('location'))
 
-      //console.log(response.headers.get('set-cookie'))
-      ////console.log('-----')
-      //console.log(response.headers.get('location'))
-
-    return response
+      return response
     }).then(response => {
       this.lastResponse = [response.headers.get('location'), response.headers.get('set-cookie')] // array med relativ url till bokning och en aktiv session cookie
     }).catch(err => {
-    console.error('an error has occurred (post)')
-    console.error(err)
+      console.error('an error has occurred (post)')
+      console.error(err)
     })
   }
-
 }
