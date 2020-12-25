@@ -16,6 +16,7 @@
   "author": "Oliwer Ellréus <oe222ez@student.lnu.se>",
   "license": "MIT",
   "dependencies": {
+    "is-url": "^1.2.4",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"
   },
