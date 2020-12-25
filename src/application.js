@@ -137,8 +137,71 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
       }).then(() => {
         console.log('-----RESTAURANT module finished!!-----')
   
-        // gå till suggestion.js!
+        this.findPossibleTimes()
   
       }) 
+      }
+
+      findPossibleTimes () {
+        console.log('------------- Alla möjliga tider ------------------')
+
+        const possibleMovies = this.cinema.cinemaPossibleTimes
+        const restaurantPossibleTimes = this.restaurant.AllFreeTimes
+
+        console.log(possibleMovies)
+        console.log(restaurantPossibleTimes)
+
+        // hitta tider som skulle fungera
+
+        console.log('---- letar möjliga tider ----')
+        for (let i = 0; i < possibleMovies.length; i++) {
+          //console.log('film: ', i)
+
+          var movieDay = possibleMovies[i].day
+          var movieTime = possibleMovies[i].time
+          
+          //console.log(movieDay, movieTime)
+
+          // timme att söka efter:
+
+          var spliceMovieTime = movieTime.split(':')
+          var spliceMovieTimeHour = Number(spliceMovieTime[0])
+          //console.log(spliceMovieTimeHour)
+
+          var hourSearchFor = spliceMovieTimeHour + 2
+
+          //console.log('hour search for: ', hourSearchFor)
+
+          // hitta fungerande tid i restaurant:
+
+          for (let i = 0; i < restaurantPossibleTimes.length; i++) {
+            //console.log(i)
+
+            var restaurantDay = restaurantPossibleTimes[i].day
+
+
+            if (movieDay === restaurantDay) { // om dagarna matchar! testad FUNGERAR!
+              //console.log('-----------test---------')
+
+
+            // start tid restaurang
+            var restaurantHour = restaurantPossibleTimes[i].time.split('-')
+            var firstRestaurantHour = Number(restaurantHour[0])
+            //console.log('firstRestaurantHour: ', firstRestaurantHour)
+
+            if (spliceMovieTimeHour === firstRestaurantHour) // måste vara lika? eller mer än 2h möjligt??
+
+              console.log('MÖJLIG TID!')
+           }
+          }
+
+
+
+
+        }
+
+
+        // gå till suggestion.js
+
       }
 }
