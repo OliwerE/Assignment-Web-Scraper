@@ -134,7 +134,7 @@ export class Cinema {
       console.log(numberOfTimes) // visar ibland 36 ist för 9 BUGG???
 
       for (let i = 0; i < numberOfTimes; i++) {
-        if (this.cinemaPossibleDaysAllTimes[i].status === 0) { // om tiden är tillgänglig
+        if (this.cinemaPossibleDaysAllTimes[i].status === 1) { // om tiden är tillgänglig OBS ändrade till 1, 0 var fullbokat!
           this.cinemaPossibleTimes = this.cinemaPossibleTimes.concat(this.cinemaPossibleDaysAllTimes[i]) // lägger till dagen om den är möjlig i cinemaPossibleTimes
         }
       }

@@ -168,16 +168,16 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
           var spliceMovieTimeHour = Number(spliceMovieTime[0])
           //console.log(spliceMovieTimeHour)
 
-          var hourSearchFor = spliceMovieTimeHour + 2
+          var hourSearchForInRestaurant = spliceMovieTimeHour + 2
 
           //console.log('hour search for: ', hourSearchFor)
 
           // hitta fungerande tid i restaurant:
 
-          for (let i = 0; i < restaurantPossibleTimes.length; i++) {
+          for (let a = 0; a < restaurantPossibleTimes.length; a++) {
             //console.log(i)
 
-            var restaurantDay = restaurantPossibleTimes[i].day
+            var restaurantDay = restaurantPossibleTimes[a].day
 
 
             if (movieDay === restaurantDay) { // om dagarna matchar! testad FUNGERAR!
@@ -185,13 +185,24 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
 
 
             // start tid restaurang
-            var restaurantHour = restaurantPossibleTimes[i].time.split('-')
+            var restaurantHour = restaurantPossibleTimes[a].time.split('-')
             var firstRestaurantHour = Number(restaurantHour[0])
-            //console.log('firstRestaurantHour: ', firstRestaurantHour)
+            console.log(/*'firstRestaurantHour: ', */firstRestaurantHour)
 
-            if (spliceMovieTimeHour === firstRestaurantHour) // måste vara lika? eller mer än 2h möjligt??
+            console.log(/*'cinema 2 hours after: ', */hourSearchForInRestaurant)
+            console.log('-------------------------')
 
+
+            if (firstRestaurantHour >= hourSearchForInRestaurant){ // måste vara lika? eller mer än 2h möjligt??
+              console.log('-------------------------')
               console.log('MÖJLIG TID!')
+
+              console.log(possibleMovies[i])
+              console.log(restaurantPossibleTimes[a])
+
+              
+              console.log('-------------------------')
+            }
            }
           }
 
