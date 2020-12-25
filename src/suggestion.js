@@ -12,7 +12,7 @@ export class Suggestion {
     }
 
     start () {
-      console.log('Suggestions\n===========')
+      console.log('\nSuggestions\n===========')
       this.buildSuggestionStrings()
     }
 

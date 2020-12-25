@@ -35,12 +35,12 @@ export class Restaurant {
     }
 
     async scrapeDinnerFirstPage () {
-        console.log('scrapeDinnerFirstPage')
+        //console.log('scrapeDinnerFirstPage')
 
         await new Promise((resolve, reject) => {
           resolve(this.scraper.getScraper(this.firstPageLink)) // skrapar första sidan i zeke's bar
         }).then(() => {
-          console.log('A zeke get request resolved!')
+          //console.log('A zeke get request resolved!')
 
           //build dom
           const zekeStart = new JSDOM(this.scraper.lastResponse)
@@ -52,7 +52,7 @@ export class Restaurant {
           const relativeSpliced = loginPostLinkAction[0].slice(2)
           this.absoluteZekeLogin = this.firstPageLink.concat(relativeSpliced)
           
-          console.log(this.absoluteZekeLogin)
+          //console.log(this.absoluteZekeLogin)
 
 
 
@@ -61,7 +61,7 @@ export class Restaurant {
       }
 
       async getZekeSessionToken () {
-        console.log('----- get zeke session token -----')
+        //console.log('----- get zeke session token -----')
 
         const loginInfo = { // flytta???
           "username": "zeke",
@@ -71,10 +71,10 @@ export class Restaurant {
         await new Promise((resolve, reject) => {
           resolve(this.scraper.postLoginScraper(this.absoluteZekeLogin, loginInfo)) // skrapar första sidan i zeke's bar
         }).then(() => {
-          console.log('------post response----')
-          console.log(this.scraper.lastResponse)
+          //console.log('------post response----')
+          //console.log(this.scraper.lastResponse)
           //console.log(this.lastResponse.headers.get('set-cookie') )
-          console.log('------post response----')
+          //console.log('------post response----')
           //this.modifyPostResponse()
         })
       }
@@ -86,14 +86,14 @@ export class Restaurant {
         // create absolute url
 
         const absoluteUrl = this.firstPageLink.concat(relativeUrl)
-        console.log(absoluteUrl)
+        //console.log(absoluteUrl)
 
         // extract cookie
 
         const splitCookie = responseCookie.split('; ')
         const fixedCookie = splitCookie[0]
 
-        console.log(fixedCookie)
+        //console.log(fixedCookie)
 
         this.getRequestDataZeke = [absoluteUrl, fixedCookie]
 
@@ -101,20 +101,20 @@ export class Restaurant {
       }
 
       async scrapeDinnerBooking () {
-        console.log('----- Scrape dinner booking begins -----')
+        //console.log('----- Scrape dinner booking begins -----')
 
         await new Promise((resolve, reject) => {
           resolve(this.scraper.getScraper(this.getRequestDataZeke[0], this.getRequestDataZeke[1])) // skrapar första sidan i zeke's bar
         }).then(() => {
-          console.log('------booking response----')
+          //console.log('------booking response----')
           //console.log(this.scraper.lastResponse)
-          console.log('------/booking response----')
+          //console.log('------/booking response----')
           //this.getAllZekeBookingTimes()
         })
       }
 
       getAllZekeBookingTimes () { // inkl fullbokade
-        console.log('------getAllZekeBookingTimes-----')
+        //console.log('------getAllZekeBookingTimes-----')
         const zekeBookingDom = new JSDOM(this.scraper.lastResponse)
 
         //const potentialTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection2"] span')) // WordSection2, 4, 6 är tiderna!
@@ -143,10 +143,10 @@ export class Restaurant {
 
 
         }
-        console.log('------all nodes------')
-        console.log(this.zekeAllTimes)
-        console.log('allnodes length: ', this.zekeAllTimes.length)
-        console.log('------all nodes------')
+        //console.log('------all nodes------')
+        //console.log(this.zekeAllTimes)
+        //console.log('allnodes length: ', this.zekeAllTimes.length)
+        //console.log('------all nodes------')
 
         // gör om till strings:
         let freeCount = 0
@@ -159,11 +159,11 @@ export class Restaurant {
           */
 
           let splitted = this.zekeAllTimes[i].childNodes[0].nodeValue.split(' ')
-          console.log(splitted[12]) // [12] = tiden, [13] = om free eller fully
+          //console.log(splitted[12]) // [12] = tiden, [13] = om free eller fully
 
           const ifFree = splitted[13].split('\n') // tiden i textsträng
           
-          console.log(ifFree[0]) // Free eller Fully (fullbokat)
+          //console.log(ifFree[0]) // Free eller Fully (fullbokat)
 
           /*
           if (splitted[1] === 'ree\n          ') { // om bord är ledigt
@@ -174,7 +174,7 @@ export class Restaurant {
 
 
           if (ifFree[0] === 'Free') { // Alla möjliga tider
-            console.log('!!!')
+            //console.log('!!!')
             var freeDay
             if (i <= 3 && i >= 0) { // om fredag
               freeDay = '05'
@@ -193,12 +193,12 @@ export class Restaurant {
 
         // console.log('antal möjliga alternativ: ', freeCount)
 
-        console.log(this.AllFreeTimes)
-        console.log('antal ev möjliga tider: ', this.AllFreeTimes.length)
+        //console.log(this.AllFreeTimes)
+        //console.log('antal ev möjliga tider: ', this.AllFreeTimes.length)
 
 
 
-        console.log('------getAllZekeBookingTimes-----')
+        //console.log('------getAllZekeBookingTimes-----')
       }
       
 }

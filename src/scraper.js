@@ -14,7 +14,7 @@ export class Scraper {
   }
 
   async getScraper (url, cookie) { // kör node fetch med current url här!
-    console.log('begins node fetch')
+    //console.log('begins node fetch')
 
     const scraper = await fetch(url, { // Sends user answer to server using fetch api.
       method: 'get',
@@ -33,7 +33,7 @@ export class Scraper {
   }
 
   async postLoginScraper (url, login) { // kör node fetch med current url här!
-    console.log('begins post scraper')
+    //console.log('begins post scraper')
     
     await fetch(url, {
       method: "post",

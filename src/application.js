@@ -33,7 +33,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
     }
 
     async firstScrape () {
-    console.log('calls scraper first links')
+    //console.log('calls scraper first links')
 
     
 
@@ -41,42 +41,29 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
     await new Promise((resolve, reject) => {
       resolve(this.getScraper(this.startUrl))
     }).then(() => {
-      console.log('first links resolved!')
+      //console.log('first links resolved!')
       this.getFirstLinks()
     })
     
   }
 
     getFirstLinks(typeOfData) { // tar ut första länkarna på startsidan och kalender (om typeOfData är firstLinksCalendar)
-      console.log('getFIRSTLinks startar')
+      //console.log('getFIRSTLinks startar')
       const startDom = new JSDOM(this.lastResponse)
-      console.log('first links')
+     // console.log('first links')
       
-
-      if(typeOfData === 'firstLinksCalendar') { // kan ta bort if satsen?? är flyttad till calendar module
-        const relativeLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
-        console.log('KALENDER GET FIRST LINKS!')
-        //this.scrapeAllCalendars()
-
-        //bygg absoluta länkar här:
-        console.log('number of links:', relativeLinks.length)
-
-        this.calendarFirstPageLinks = []
-        
-        for (let i = 0; i < relativeLinks.length; i++) {
-          console.log('calendar link: ', i)
-          this.calendarFirstPageLinks[i] = this.firstPageLinks[0].concat(relativeLinks[i].slice(2)) // creates absolute link
-        }
-      } else {
       this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href)
-      console.log(this.firstPageLinks)
+      //console.log(this.firstPageLinks)
+      
+      console.log ('Scraping links...OK')
+
       this.beginScrapingAllPages()
-      }
+      
 
       }
 
       beginScrapingAllPages () {  // GLÖMT FORTSÄTTA MED DENNA!!
-        console.log('-------beginScrapingAllPages-------')
+        //console.log('-------beginScrapingAllPages-------')
 
         // alla sidor delar skrapas separat pga olika struktur.
         this.beginScrapeCalendar() // skrape cinema börjar via denna! i slutet!
@@ -89,11 +76,11 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
       async beginScrapeCalendar () {
         this.calendar = new Calendar(this.firstPageLinks[0]) // skapar instans av calendar
       
-     console.log('------------------------------start kalender-------------------')
+     //console.log('------------------------------start kalender-------------------')
       await new Promise((resolve, reject) => { // fungerar nu!
       resolve(this.calendar.start())
     }).then(() => {
-      console.log('-----Calendar module finished!!-----')
+      console.log('Scraping available days...OK')
 
       // starta cinema skrapning här:
 
@@ -110,12 +97,12 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
         // gör om till promise???
         //this.cinema.start() // get response, calendarPotentialDays, startsidan länk
 
-        console.log('------------------------------start CINEMA-------------------')
+        //console.log('------------------------------start CINEMA-------------------')
         await new Promise((resolve, reject) => { // fungerar nu!
         resolve(this.cinema.start())
       }).then(() => {
-        console.log('-----CINEMA module finished!!-----')
-  
+        //console.log('-----CINEMA module finished!!-----')
+        console.log('Scraping showtimes...OK')
         // starta cinema skrapning här:
   
         this.scrapeRestaurant()
@@ -123,7 +110,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
       }
 
       async scrapeRestaurant () {
-        console.log('----------------------begin restaurant------------------------')
+        //console.log('----------------------begin restaurant------------------------')
         //this.scrapeDinnerFirstPage()
 
         this.restaurant = new Restaurant(this.firstPageLinks[2])
@@ -135,25 +122,25 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
         await new Promise((resolve, reject) => { // fungerar nu!
         resolve(this.restaurant.start())
       }).then(() => {
-        console.log('-----RESTAURANT module finished!!-----')
-  
+        //console.log('-----RESTAURANT module finished!!-----')
+        console.log('Scraping possible reservations...OK')
         this.findPossibleTimes()
   
       }) 
       }
 
       findPossibleTimes () {
-        console.log('------------- Alla möjliga tider ------------------')
+        //console.log('------------- Alla möjliga tider ------------------')
 
         const possibleMovies = this.cinema.cinemaPossibleTimes
         const restaurantPossibleTimes = this.restaurant.AllFreeTimes
 
-        console.log(possibleMovies)
-        console.log(restaurantPossibleTimes)
+        //console.log(possibleMovies)
+        //console.log(restaurantPossibleTimes)
 
         // hitta tider som skulle fungera
 
-        console.log('---- letar möjliga tider ----')
+        //console.log('---- letar möjliga tider ----')
         for (let i = 0; i < possibleMovies.length; i++) {
           //console.log('film: ', i)
 
@@ -230,7 +217,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
 
         }
 
-        console.log(this.alternatives)
+        //console.log(this.alternatives)
         // gå till suggestion.js
 
         this.suggestion = new Suggestion(this.alternatives)

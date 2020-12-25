@@ -26,7 +26,7 @@ export class Calendar {
 
 
    async start () {
-    console.log('calendar class started')
+    //console.log('calendar class started')
 
     
     // await saknades på async funk! LÖST!
@@ -38,21 +38,21 @@ export class Calendar {
   }
 
   getFirstLinks() {
-    console.log('getFIRSTLinks startar')
+    //console.log('getFIRSTLinks startar')
     const startDom = new JSDOM(this.scraper.lastResponse)
-    console.log('first links')
+    //console.log('first links')
     
       const relativeLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.href)
-      console.log('KALENDER GET FIRST LINKS!')
+      //console.log('KALENDER GET FIRST LINKS!')
       //this.scrapeAllCalendars()
 
       //bygg absoluta länkar här:
-      console.log('number of links:', relativeLinks.length)
+      //console.log('number of links:', relativeLinks.length)
 
       this.calendarFirstPageLinks = []
       
       for (let i = 0; i < relativeLinks.length; i++) {
-        console.log('calendar link: ', i)
+        //console.log('calendar link: ', i)
         this.calendarFirstPageLinks[i] = this.link.concat(relativeLinks[i].slice(2)) // creates absolute link
       }
 
@@ -60,14 +60,14 @@ export class Calendar {
 
   async scrapeAllCalendars () {
 
-    console.log('-----starts scrapeAllCalendars------')
-    console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
-    console.log(this.calendarFirstPageLinks.length)
+    //console.log('-----starts scrapeAllCalendars------')
+    //console.log(this.calendarFirstPageLinks) // måste skapa absoluta länkar av dessa!
+    //console.log(this.calendarFirstPageLinks.length)
 
 
     this.calendarDays  = [] // array with all persons possible days
     for(let i = 0; i < this.calendarFirstPageLinks.length; i++) {
-      console.log('skrapa kalender länk', i)
+      //console.log('skrapa kalender länk', i)
 
 
       
@@ -78,7 +78,7 @@ export class Calendar {
         
        //await this.scraper.getScraper(this.calendarFirstPageLinks[i])
 
-        console.log('person', i, 'calendar scraped!')
+        //console.log('person', i, 'calendar scraped!')
 
         // lägg till alla dagar i array:
         const calendarDom = new JSDOM(this.scraper.lastResponse)
@@ -87,7 +87,7 @@ export class Calendar {
         
         // Name FUNGERAR INTE
         var personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
-        console.log(personName)
+        //console.log(personName)
 
 
 
@@ -96,21 +96,21 @@ export class Calendar {
 
           var day = days[i].childNodes[0].nodeValue
           var dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
-          console.log(day)
-          console.log(dayAnswer)
+          //console.log(day)
+          //console.log(dayAnswer)
 
 
           if (dayAnswer === '--' || dayAnswer === '-') { // fungerar inte med !== måste använda === och ha else sats FIXA
-            console.log('find another day!')
+            //console.log('find another day!')
 
           } else {
-            console.log('found day!')
+            //console.log('found day!')
             personDays.push(day)
           }
         }
         this.calendarDays.push(personDays) // fungerar inte utanför
 
-        console.log('SCRAPE ALL CALENDARS SLUT')
+        //console.log('SCRAPE ALL CALENDARS SLUT')
         this.possibleDays()
       })
 
@@ -124,9 +124,9 @@ export class Calendar {
   }
 
   possibleDays () {
-    console.log('---possibleDays startar----')
-    console.log('dagar som de olika personerna kan:')
-    console.log(this.calendarDays)
+    //console.log('---possibleDays startar----')
+    //console.log('dagar som de olika personerna kan:')
+    //console.log(this.calendarDays)
 
     // dagarna antal ggr (gör om till objekt??)
     var fridayCount = 0
@@ -153,7 +153,7 @@ export class Calendar {
 
       }
     }
-    console.log('friday: ', fridayCount, 'saturday: ', saturdayCount, 'sunday: ', sundayCount)
+    //console.log('friday: ', fridayCount, 'saturday: ', saturdayCount, 'sunday: ', sundayCount)
 
     //välj ut möjliga dagar: SKAPA BÄTTRE LÖSNING!!
 
@@ -175,10 +175,10 @@ export class Calendar {
     }
     */
 
-    console.log(this.calendarPotentialDays)
+    //console.log(this.calendarPotentialDays)
 
 
-    console.log('-----slut calendar modul-----')
+    //console.log('-----slut calendar modul-----')
     //this.scrapeCinema() // LÖS PÅ ANNAT SÄTT FÖR ATT FORTSÄTTA!
   }
 
