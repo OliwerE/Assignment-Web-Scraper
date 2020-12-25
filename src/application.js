@@ -29,6 +29,8 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
       this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
       this.calendarFirstPageLinks
 
+      this.alternatives = [] // array med alternativobjekt (för suggestion.js)
+
       //this.scraper = new scraper.Scraper() // instans av scraper
     }
 
@@ -187,21 +189,40 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
             // start tid restaurang
             var restaurantHour = restaurantPossibleTimes[a].time.split('-')
             var firstRestaurantHour = Number(restaurantHour[0])
-            console.log(/*'firstRestaurantHour: ', */firstRestaurantHour)
+            //console.log(/*'firstRestaurantHour: ', */firstRestaurantHour)
 
-            console.log(/*'cinema 2 hours after: ', */hourSearchForInRestaurant)
-            console.log('-------------------------')
+            //console.log(/*'cinema 2 hours after: ', */hourSearchForInRestaurant)
+            //console.log('-------------------------')
 
 
             if (firstRestaurantHour >= hourSearchForInRestaurant){ // måste vara lika? eller mer än 2h möjligt??
-              console.log('-------------------------')
-              console.log('MÖJLIG TID!')
 
-              console.log(possibleMovies[i])
-              console.log(restaurantPossibleTimes[a])
+              // dag i textsträng
+              var day
+              if (possibleMovies[i].day === '05') {
+                day = 'Friday'
+              } else if (possibleMovies[i].day === '06') {
+                day = 'Saturday'
+              } else if (possibleMovies[i].day === '07') {
+                day = 'Sunday'
+              }
 
-              
-              console.log('-------------------------')
+              // film namn
+              var movieId = possibleMovies[i].movie
+              var movieNumber = movieId.split('0')
+              var movieIndex = Number(movieNumber[1]) - 1
+              var movieName = this.cinema.movieNames[movieIndex].childNodes[0].nodeValue
+
+              // table times
+
+              var tableTimes = restaurantPossibleTimes[a].time
+              var splitTableTimes = tableTimes.split('-')
+              var altObjTime = splitTableTimes[0].concat(':00-', splitTableTimes[1], ':00')
+
+
+              var newAlternative = {day: day, movie: movieName, movieBegin: movieTime, tableHours: altObjTime} // gör om movie till string av riktiga namnet, ändra format tablehour timmar till : och 00
+              this.alternatives.push(newAlternative)
+
             }
            }
           }
@@ -211,8 +232,10 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
 
         }
 
-
+        console.log(this.alternatives)
         // gå till suggestion.js
+
+        // console.log(this.cinema.movieNames[2].childNodes[0].nodeValue) // filmnamnen!
 
       }
 }

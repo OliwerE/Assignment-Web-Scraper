@@ -21,6 +21,7 @@ export class Cinema {
       this.cinemaRequestLinks = [] // links used to request movies from cinema.
       this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
       this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
+      this.movieNames // alla filmerna
     }
 
     async start () {
@@ -54,6 +55,8 @@ export class Cinema {
       // All movies
       const movies = cinemaOption.splice (3, cinemaOption.length)
       const numberOfMovies = movies.length
+
+      this.movieNames = movies // används i slutet av application sätter ihop objekt!
 
       console.log('number of movies: ', numberOfMovies)
 
