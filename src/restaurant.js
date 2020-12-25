@@ -20,6 +20,7 @@ export class Restaurant {
         this.absoluteZekeLogin // absoluta länken för att skicka post request till login
         this.getRequestDataZeke // array med zeke booking länk och session cookie
         this.zekeAllTimes // Alla tider zekes bar tider, även fullbokade
+        this.AllFreeTimes = [] // array med alla möjliga tider i separata objekt
 
     }
 
@@ -152,20 +153,48 @@ export class Restaurant {
         for (let i = 0; i < this.zekeAllTimes.length; i++) {
           //console.log(i)
 
+          /*
           let splitted = this.zekeAllTimes[i].childNodes[0].nodeValue.split(' F')
           console.log(splitted)
+          */
 
+          let splitted = this.zekeAllTimes[i].childNodes[0].nodeValue.split(' ')
+          console.log(splitted[12]) // [12] = tiden, [13] = om free eller fully
+
+          const ifFree = splitted[13].split('\n') // tiden i textsträng
           
+          console.log(ifFree[0]) // Free eller Fully (fullbokat)
+
+          /*
           if (splitted[1] === 'ree\n          ') { // om bord är ledigt
             freeCount += 1
             
+          }*/
+
+
+
+          if (ifFree[0] === 'Free') { // Alla möjliga tider
+            console.log('!!!')
+            var freeDay
+            if (i <= 3 && i >= 0) { // om fredag
+              freeDay = '05'
+            } else if (i <= 7 && i > 3) { // om lördag
+              freeDay = '06'
+            } else if (i <= 11 && i > 7) { // om söndag
+              freeDay = '07'
+            }
+            var potentialTime = {time: splitted[12], day: freeDay}
+            this.AllFreeTimes.push(potentialTime)
           }
           
 
 
         }
 
-        console.log('antal möjliga alternativ: ', freeCount)
+        // console.log('antal möjliga alternativ: ', freeCount)
+
+        console.log(this.AllFreeTimes)
+        console.log('antal ev möjliga tider: ', this.AllFreeTimes.length)
 
 
 
