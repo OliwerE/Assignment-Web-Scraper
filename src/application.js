@@ -13,24 +13,27 @@ import { Restaurant } from './restaurant.js'
 import { Suggestion } from './suggestion.js'
 
 /**
- *
+ * The main class for the web scraper application
  */
 export class Application extends Scraper { // ta bort extends Scraper när allt är flyttat till moduler
   /**
-   * @param startUrl
+   * Constructs the application object.
+   *
+   * @param {string} startUrl - The First url.
    */
   constructor (startUrl) {
     super()
 
-    this.calendar // instans av calendar modul
-    this.cinema // instans av cinema modul
-    this.restaurant // instans av restaurant modul
-    this.suggestion // displays suggestions
+    // // // = lint error ta bort dessa (men tydligare att förklara här??)
+    // //this.calendar // instans av calendar modul
+    // //this.cinema // instans av cinema modul
+    // //this.restaurant // instans av restaurant modul
+    // //this.suggestion // displays suggestions
 
     this.startUrl = startUrl
-    this.firstPageLinks // länkarna på första sidan
+    // //this.firstPageLinks // länkarna på första sidan
     this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
-    this.calendarFirstPageLinks
+    // //this.calendarFirstPageLinks
 
     this.alternatives = [] // array med alternativobjekt (för suggestion.js)
 
@@ -38,7 +41,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
   }
 
   /**
-   *
+   * Gets the first response using the first url.
    */
   async firstScrape () {
     // console.log('calls scraper first links')
@@ -53,9 +56,9 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
   }
 
   /**
-   * @param typeOfData
+   * Creates dom from first response and extract links.
    */
-  getFirstLinks (typeOfData) { // tar ut första länkarna på startsidan och kalender (om typeOfData är firstLinksCalendar)
+  getFirstLinks () { // tar ut första länkarna på startsidan och kalender (om typeOfData är firstLinksCalendar)
     // console.log('getFIRSTLinks startar')
     const startDom = new JSDOM(this.lastResponse)
     // console.log('first links')
@@ -65,24 +68,11 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
 
     console.log('Scraping links...OK')
 
-    this.beginScrapingAllPages()
+    this.beginScrapeCalendar()
   }
 
   /**
-   *
-   */
-  beginScrapingAllPages () { // GLÖMT FORTSÄTTA MED DENNA!!
-    // console.log('-------beginScrapingAllPages-------')
-
-    // alla sidor delar skrapas separat pga olika struktur.
-    this.beginScrapeCalendar() // skrape cinema börjar via denna! i slutet!
-
-    // .scrapeCinema()
-    // this.scrapeDinner()
-  }
-
-  /**
-   *
+   * Creates an instance of the Calendar class and runs first method, then calls next method in this class.
    */
   async beginScrapeCalendar () {
     this.calendar = new Calendar(this.firstPageLinks[0]) // skapar instans av calendar
@@ -100,10 +90,10 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
   }
 
   /**
-   *
+   * Creates an instance of the Cinema class and runs first method, then calls next method in this class.
    */
   async scrapeCinema () {
-    this.cinema = new Cinema(this.lastResponse, this.calendar.calendarPotentialDays, this.firstPageLinks[1])
+    this.cinema = new Cinema(this.calendar.calendarPotentialDays, this.firstPageLinks[1])
 
     // gör om till promise???
     // this.cinema.start() // get response, calendarPotentialDays, startsidan länk
@@ -121,7 +111,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
   }
 
   /**
-   *
+   * Creates an instance of the Restaurant class and runs first method, then calls next method in this class.
    */
   async scrapeRestaurant () {
     // console.log('----------------------begin restaurant------------------------')
@@ -142,7 +132,8 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
   }
 
   /**
-   *
+   * Finds possible times using calendar, cinema and restaurant.
+   * Then creates an instance of the suggestion class and runs first method in the class.
    */
   findPossibleTimes () {
     // console.log('------------- Alla möjliga tider ------------------')
@@ -194,7 +185,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
 
           if (firstRestaurantHour >= hourSearchForInRestaurant) { // måste vara lika? eller mer än 2h möjligt??
             // dag i textsträng
-            var day
+            let day
             if (possibleMovies[i].day === '05') {
               day = 'Friday'
             } else if (possibleMovies[i].day === '06') {

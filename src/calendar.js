@@ -13,11 +13,13 @@ import { Scraper } from './scraper.js'
 // import * as application from './application.js'
 
 /**
- *
+ * A class scraping calendars for days when everyone is free.
  */
 export class Calendar {
   /**
-   * @param link
+   * Constructs the calendar object.
+   *
+   * @param {string} link - An url used to scrape the first page of the calendar.
    */
   constructor (link) {
     this.link = link
@@ -25,12 +27,12 @@ export class Calendar {
     this.scraper = new Scraper()
 
     // flyttade från application.js
-    this.calendarDays // alla personers möjliga dagar i separata arrayer
+    // //this.calendarDays // alla personers möjliga dagar i separata arrayer // DENNA GAV LINT ERROR pga "uttryck"
     this.calendarPotentialDays = [] // möjliga dagar enligt kalender
   }
 
   /**
-   *
+   * A method used to run the other calendar methods in the correct order.
    */
   async start () {
     // console.log('calendar class started')
@@ -42,7 +44,7 @@ export class Calendar {
   }
 
   /**
-   *
+   * Scrapes links from first page in calendar.
    */
   getFirstLinks () {
     // console.log('getFIRSTLinks startar')
@@ -65,7 +67,7 @@ export class Calendar {
   }
 
   /**
-   *
+   * Scrapes all free times in all calendars.
    */
   async scrapeAllCalendars () {
     // console.log('-----starts scrapeAllCalendars------')
@@ -89,7 +91,7 @@ export class Calendar {
         const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td'))// .map(HTMLAnchorElement => HTMLAnchorElement.href) // 'a[href^="./"'
 
         // Name FUNGERAR INTE
-        const personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
+        // const personName = calendarDom.window.document.querySelector('h2').childNodes[0].nodeValue // vänd??
         // console.log(personName)
 
         const personDays = [] // dagar från en person
@@ -119,7 +121,7 @@ export class Calendar {
   }
 
   /**
-   *
+   * Finds potential days.
    */
   possibleDays () {
     // console.log('---possibleDays startar----')

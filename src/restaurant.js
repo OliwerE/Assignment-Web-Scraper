@@ -9,24 +9,28 @@ import { JSDOM } from 'jsdom'
 import { Scraper } from './scraper.js'
 
 /**
- *
+ * Class sign in and scrapes a restaurant.
  */
 export class Restaurant {
   /**
-   * @param firstPageLink
+   * Constructs the restaurant object.
+   *
+   * @param {string} firstPageLink - The first link to the restaurant.
    */
   constructor (firstPageLink) {
     this.firstPageLink = firstPageLink
     this.scraper = new Scraper()
 
-    this.absoluteZekeLogin // absoluta länken för att skicka post request till login
-    this.getRequestDataZeke // array med zeke booking länk och session cookie
-    this.zekeAllTimes // Alla tider zekes bar tider, även fullbokade
+    // dessa tre gav lint error pga uttryck!
+    // //this.absoluteZekeLogin // absoluta länken för att skicka post request till login
+    // //this.getRequestDataZeke // array med zeke booking länk och session cookie
+    // //this.zekeAllTimes // Alla tider zekes bar tider, även fullbokade
+
     this.AllFreeTimes = [] // array med alla möjliga tider i separata objekt
   }
 
   /**
-   *
+   * A method used to run the other calendar methods in the correct order.
    */
   async start () {
     await this.scrapeDinnerFirstPage()
@@ -37,7 +41,7 @@ export class Restaurant {
   }
 
   /**
-   *
+   * Scrapes the first page of the restaurant and builds an absolute link for the form post action.
    */
   async scrapeDinnerFirstPage () {
     // console.log('scrapeDinnerFirstPage')
@@ -62,7 +66,7 @@ export class Restaurant {
   }
 
   /**
-   *
+   * Method gets a new session cookie and the relative url to the booking page.
    */
   async getZekeSessionToken () {
     // console.log('----- get zeke session token -----')
@@ -84,7 +88,7 @@ export class Restaurant {
   }
 
   /**
-   *
+   * Formats the session cookie and builds an absolute link to the booking page.
    */
   modifyPostResponse () {
     const relativeUrl = this.scraper.lastResponse[0]
@@ -108,7 +112,7 @@ export class Restaurant {
   }
 
   /**
-   *
+   * Scrapes the restaurant booking page.
    */
   async scrapeDinnerBooking () {
     // console.log('----- Scrape dinner booking begins -----')
@@ -124,7 +128,7 @@ export class Restaurant {
   }
 
   /**
-   *
+   * Method saves all free booking times into an array with objects.
    */
   getAllZekeBookingTimes () { // inkl fullbokade
     // console.log('------getAllZekeBookingTimes-----')
@@ -156,7 +160,7 @@ export class Restaurant {
     // console.log('------all nodes------')
 
     // gör om till strings:
-    const freeCount = 0
+    // const freeCount = 0 // används inte??
     for (let i = 0; i < this.zekeAllTimes.length; i++) {
       // console.log(i)
 
@@ -180,7 +184,7 @@ export class Restaurant {
 
       if (ifFree[0] === 'Free') { // Alla möjliga tider
         // console.log('!!!')
-        var freeDay
+        let freeDay
         if (i <= 3 && i >= 0) { // om fredag
           freeDay = '05'
         } else if (i <= 7 && i > 3) { // om lördag

@@ -6,11 +6,13 @@
  */
 
 /**
- *
+ * A class displaying suggestions to the end-user.
  */
 export class Suggestion {
   /**
-   * @param suggestions
+   * Builds the suggestion class.
+   *
+   * @param {Array} suggestions - An array with suggestion objects.
    */
   constructor (suggestions) {
     this.suggestions = suggestions
@@ -18,7 +20,7 @@ export class Suggestion {
   }
 
   /**
-   *
+   * Start method of the suggestion class.
    */
   start () {
     console.log('\nSuggestions\n===========')
@@ -26,7 +28,7 @@ export class Suggestion {
   }
 
   /**
-   *
+   * Builds suggestions and displays them in the terminal.
    */
   buildSuggestionStrings () {
     for (let i = 0; i < this.suggestions.length; i++) {

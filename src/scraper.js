@@ -9,24 +9,26 @@ import fetch from 'node-fetch'
 // import { JSDOM } from 'jsdom'
 
 /**
- *
+ * A class scraping websites.
  */
 export class Scraper {
   /**
-   *
+   * Constructs the scraper object.
    */
-  constructor () {
-    this.lastResponse // respons
-  }
+  // constructor () { lint useless!
+  // //this.lastResponse // respons // LINT ERROR PGA UTTRYCK!
+  // }*
 
   /**
-   * @param url
-   * @param cookie
+   * A method sending http get requests.
+   *
+   * @param {string} url - An url used to send a get request.
+   * @param {string} cookie - Used to send a cookie in the body of the get request.
    */
   async getScraper (url, cookie) { // kör node fetch med current url här!
     // console.log('begins node fetch')
 
-    const scraper = await fetch(url, { // Sends user answer to server using fetch api.
+    await fetch(url, { // Sends user answer to server using fetch api.
       method: 'get',
       headers: {
         cookie: cookie
@@ -42,8 +44,10 @@ export class Scraper {
   }
 
   /**
-   * @param url
-   * @param login
+   * A method used to send http post requests.
+   *
+   * @param {string} url - An url used to send a get request.
+   * @param {object} login - An object used to send login credentials.
    */
   async postLoginScraper (url, login) { // kör node fetch med current url här!
     // console.log('begins post scraper')

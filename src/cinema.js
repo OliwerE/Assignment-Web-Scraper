@@ -9,15 +9,16 @@ import { JSDOM } from 'jsdom'
 import { Scraper } from './scraper.js'
 
 /**
- *
+ * Class scrapes a cinema for all free times.
  */
 export class Cinema {
   /**
-   * @param cinemaFirstPageResponse
-   * @param calendarPotentialDays
-   * @param firstPageLink
+   * Constructs the cinema object.
+   *
+   * @param {Array} calendarPotentialDays - An array with all potential days.
+   * @param {string} firstPageLink - Link to the first page of the cinema.
    */
-  constructor (cinemaFirstPageResponse, calendarPotentialDays, firstPageLink) {
+  constructor (calendarPotentialDays, firstPageLink) {
     this.scraper = new Scraper()
 
     // this.cinemaFirstPageResponse = cinemaFirstPageResponse // startsida cinema  // ANVÄNDS EJ
@@ -26,11 +27,11 @@ export class Cinema {
     this.cinemaRequestLinks = [] // links used to request movies from cinema.
     this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
     this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
-    this.movieNames // alla filmerna
+    // //this.movieNames // alla filmerna // denna gav lint error pga "uttryck"
   }
 
   /**
-   *
+   * A method used to run the other calendar methods in the correct order.
    */
   async start () {
     await this.scrapeCinemaFirstPage()
@@ -41,7 +42,7 @@ export class Cinema {
   }
 
   /**
-   *
+   * Scrapes the cinema page.
    */
   async scrapeCinemaFirstPage () { // FLYTTA TILL BÖRJAN PÅ CINEMA MODUL!
     // console.log('-----börjar skrapa cinema-----')
@@ -55,7 +56,7 @@ export class Cinema {
   }
 
   /**
-   *
+   * Creates an array with all movie alternatives.
    */
   getNumberOfMovies () {
     // console.log('----current movies----')
@@ -71,14 +72,15 @@ export class Cinema {
 
     // console.log('number of movies: ', numberOfMovies)
 
-    this.createCinemaAvailabilityLinks(movies, numberOfMovies)
+    this.createCinemaAvailabilityLinks(numberOfMovies)
   }
 
   /**
-   * @param movies
-   * @param numberOfMovies
+   * Creates cinema links used to find free times for each movie.
+   *
+   * @param {number} numberOfMovies - Number of movies at the cinema.
    */
-  createCinemaAvailabilityLinks (movies, numberOfMovies) {
+  createCinemaAvailabilityLinks (numberOfMovies) {
     // console.log('----createCinemaAvailabilityLinks----')
     const numberOfDays = this.calendarPotentialDays.length
     // console.log(numberOfDays)
@@ -103,7 +105,7 @@ export class Cinema {
       const thirdRequestPart = '&movie=0'
 
       for (let a = 1; a <= numberOfMovies; a++) { // skapar alla relativa get länkar.
-        const requestLink = this.cinemaFirstPageAbsoluteLink.concat('/').concat(firstRequestPart).concat(checkDay).concat(thirdRequestPart).concat(a)
+        const requestLink = this.cinemaFirstPageAbsoluteLink.concat('/').concat(firstRequestPart).concat(checkDay).concat(thirdRequestPart).concat(a) // OBS BEHÖVS ENDAST EN CONCAT MED , MELLAN
         this.cinemaRequestLinks.push(requestLink)
         // console.log(requestLink)
       }
@@ -112,7 +114,7 @@ export class Cinema {
   }
 
   /**
-   *
+   * Scrapes all movies on each day.
    */
   async scrapePotentialCinemaDays () {
     // console.log('-----scrape cinema days-----')
@@ -142,7 +144,7 @@ export class Cinema {
   }
 
   /**
-   *
+   * Adds all potential times into an array.
    */
   addPotentialTimesToArray () {
     // console.log('------------lägg till möjliga tider---------')
