@@ -23,34 +23,17 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    */
   constructor (startUrl) {
     super()
-
-    // // // = lint error ta bort dessa (men tydligare att förklara här??)
-    // //this.calendar // instans av calendar modul
-    // //this.cinema // instans av cinema modul
-    // //this.restaurant // instans av restaurant modul
-    // //this.suggestion // displays suggestions
-
-    this.startUrl = startUrl
-    // //this.firstPageLinks // länkarna på första sidan
-    this.firstLinksCount = 0 // om = antal länkar på startsidan slutar applikationen
-    // //this.calendarFirstPageLinks
-
-    this.alternatives = [] // array med alternativobjekt (för suggestion.js)
-
-    // this.scraper = new scraper.Scraper() // instans av scraper
+    this.startUrl = startUrl // Url where the webscraper begins.
+    this.alternatives = [] // An Array with all alternatives for sugestion module.
   }
 
   /**
    * Gets the first response using the first url.
    */
   async firstScrape () {
-    // console.log('calls scraper first links')
-
-    // promise väntar på första url html skrapas
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => { // Awaits response from first page.
       resolve(this.getScraper(this.startUrl))
     }).then(() => {
-      // console.log('first links resolved!')
       this.getFirstLinks()
     })
   }
@@ -58,16 +41,10 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
   /**
    * Creates dom from first response and extract links.
    */
-  getFirstLinks () { // tar ut första länkarna på startsidan och kalender (om typeOfData är firstLinksCalendar)
-    // console.log('getFIRSTLinks startar')
+  getFirstLinks () {
     const startDom = new JSDOM(this.lastResponse)
-    // console.log('first links')
-
-    this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href)
-    // console.log(this.firstPageLinks)
-
+    this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href) // Creates an array with all links on the first page.
     console.log('Scraping links...OK')
-
     this.beginScrapeCalendar()
   }
 
@@ -75,16 +52,11 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    * Creates an instance of the Calendar class and runs first method, then calls next method in this class.
    */
   async beginScrapeCalendar () {
-    this.calendar = new Calendar(this.firstPageLinks[0]) // skapar instans av calendar
-
-    // console.log('------------------------------start kalender-------------------')
-    await new Promise((resolve, reject) => { // fungerar nu!
-      resolve(this.calendar.start())
+    this.calendar = new Calendar(this.firstPageLinks[0]) // Creates new instance of the calendar class
+    await new Promise((resolve, reject) => {
+      resolve(this.calendar.start()) // Runs the calendar class.
     }).then(() => {
       console.log('Scraping available days...OK')
-
-      // starta cinema skrapning här:
-
       this.scrapeCinema()
     })
   }
@@ -94,18 +66,10 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    */
   async scrapeCinema () {
     this.cinema = new Cinema(this.calendar.calendarPotentialDays, this.firstPageLinks[1])
-
-    // gör om till promise???
-    // this.cinema.start() // get response, calendarPotentialDays, startsidan länk
-
-    // console.log('------------------------------start CINEMA-------------------')
-    await new Promise((resolve, reject) => { // fungerar nu!
-      resolve(this.cinema.start())
+    await new Promise((resolve, reject) => {
+      resolve(this.cinema.start()) // Runs the cinema class.
     }).then(() => {
-      // console.log('-----CINEMA module finished!!-----')
       console.log('Scraping showtimes...OK')
-      // starta cinema skrapning här:
-
       this.scrapeRestaurant()
     })
   }
@@ -114,18 +78,10 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    * Creates an instance of the Restaurant class and runs first method, then calls next method in this class.
    */
   async scrapeRestaurant () {
-    // console.log('----------------------begin restaurant------------------------')
-    // this.scrapeDinnerFirstPage()
-
     this.restaurant = new Restaurant(this.firstPageLinks[2])
-
-    // gör om till promise???
-    // this.cinema.start() // get response, calendarPotentialDays, startsidan länk
-
-    await new Promise((resolve, reject) => { // fungerar nu!
-      resolve(this.restaurant.start())
+    await new Promise((resolve, reject) => {
+      resolve(this.restaurant.start()) // Runs the restaurant class.
     }).then(() => {
-      // console.log('-----RESTAURANT module finished!!-----')
       console.log('Scraping possible reservations...OK')
       this.findPossibleTimes()
     })
@@ -136,55 +92,30 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    * Then creates an instance of the suggestion class and runs first method in the class.
    */
   findPossibleTimes () {
-    // console.log('------------- Alla möjliga tider ------------------')
-
     const possibleMovies = this.cinema.cinemaPossibleTimes
     const restaurantPossibleTimes = this.restaurant.AllFreeTimes
 
-    // console.log(possibleMovies)
-    // console.log(restaurantPossibleTimes)
-
-    // hitta tider som skulle fungera
-
-    // console.log('---- letar möjliga tider ----')
-    for (let i = 0; i < possibleMovies.length; i++) {
-      // console.log('film: ', i)
-
+    for (let i = 0; i < possibleMovies.length; i++) { // goes through movie alternatives.
       const movieDay = possibleMovies[i].day
       const movieTime = possibleMovies[i].time
 
-      // console.log(movieDay, movieTime)
-
-      // timme att söka efter:
-
+      // Hour to search for in the restaurant alternatives
       const spliceMovieTime = movieTime.split(':')
       const spliceMovieTimeHour = Number(spliceMovieTime[0])
-      // console.log(spliceMovieTimeHour)
 
-      const hourSearchForInRestaurant = spliceMovieTimeHour + 2
+      const hourSearchForInRestaurant = spliceMovieTimeHour + 2 // Two hours after the movie begin
 
-      // console.log('hour search for: ', hourSearchFor)
-
-      // hitta fungerande tid i restaurant:
-
-      for (let a = 0; a < restaurantPossibleTimes.length; a++) {
-        // console.log(i)
-
+      // Tries to find a matching time at the restaurant
+      for (let a = 0; a < restaurantPossibleTimes.length; a++) { // Goes through restaruant alternatives.
         const restaurantDay = restaurantPossibleTimes[a].day
 
-        if (movieDay === restaurantDay) { // om dagarna matchar! testad FUNGERAR!
-          // console.log('-----------test---------')
-
-          // start tid restaurang
+        if (movieDay === restaurantDay) { // If the movie alternative and the restaurant alternative equals the same day.
+          // Hour the restaurant booking begins.
           const restaurantHour = restaurantPossibleTimes[a].time.split('-')
           const firstRestaurantHour = Number(restaurantHour[0])
-          // console.log(/*'firstRestaurantHour: ', */firstRestaurantHour)
 
-          // console.log(/*'cinema 2 hours after: ', */hourSearchForInRestaurant)
-          // console.log('-------------------------')
-
-          if (firstRestaurantHour >= hourSearchForInRestaurant) { // måste vara lika? eller mer än 2h möjligt??
-            // dag i textsträng
+          if (firstRestaurantHour >= hourSearchForInRestaurant) { // If the restaurant booking is at least two hours after the movie begins.
+            // changes day number to the name of the day.
             let day
             if (possibleMovies[i].day === '05') {
               day = 'Friday'
@@ -194,31 +125,25 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
               day = 'Sunday'
             }
 
-            // film namn
+            // Changes movie name from a number to the real name.
             const movieId = possibleMovies[i].movie
             const movieNumber = movieId.split('0')
             const movieIndex = Number(movieNumber[1]) - 1
             const movieName = this.cinema.movieNames[movieIndex].childNodes[0].nodeValue
 
-            // table times
-
+            // Changes restaurant booking time to the exact format.
             const tableTimes = restaurantPossibleTimes[a].time
             const splitTableTimes = tableTimes.split('-')
             const altObjTime = splitTableTimes[0].concat(':00-', splitTableTimes[1], ':00')
 
-            const newAlternative = { day: day, movie: movieName, movieBegin: movieTime, tableHours: altObjTime } // gör om movie till string av riktiga namnet, ändra format tablehour timmar till : och 00
-            this.alternatives.push(newAlternative)
+            const newAlternative = { day: day, movie: movieName, movieBegin: movieTime, tableHours: altObjTime } // Creates a suggestion object.
+            this.alternatives.push(newAlternative) // Adds suggestion object in an array.
           }
         }
       }
     }
 
-    // console.log(this.alternatives)
-    // gå till suggestion.js
-
     this.suggestion = new Suggestion(this.alternatives)
-    this.suggestion.start()
-
-    // console.log(this.cinema.movieNames[2].childNodes[0].nodeValue) // filmnamnen!
+    this.suggestion.start() // Displays suggestions.
   }
 }

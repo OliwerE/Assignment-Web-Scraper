@@ -18,15 +18,9 @@ export class Restaurant {
    * @param {string} firstPageLink - The first link to the restaurant.
    */
   constructor (firstPageLink) {
-    this.firstPageLink = firstPageLink
+    this.firstPageLink = firstPageLink // First page of the restaurant.
     this.scraper = new Scraper()
-
-    // dessa tre gav lint error pga uttryck!
-    // //this.absoluteZekeLogin // absoluta länken för att skicka post request till login
-    // //this.getRequestDataZeke // array med zeke booking länk och session cookie
-    // //this.zekeAllTimes // Alla tider zekes bar tider, även fullbokade
-
-    this.AllFreeTimes = [] // array med alla möjliga tider i separata objekt
+    this.AllFreeTimes = [] // An array with all free times.
   }
 
   /**
@@ -44,24 +38,18 @@ export class Restaurant {
    * Scrapes the first page of the restaurant and builds an absolute link for the form post action.
    */
   async scrapeDinnerFirstPage () {
-    // console.log('scrapeDinnerFirstPage')
-
     await new Promise((resolve, reject) => {
-      resolve(this.scraper.getScraper(this.firstPageLink)) // skrapar första sidan i zeke's bar
+      resolve(this.scraper.getScraper(this.firstPageLink)) // Scrapes the first page of the restaurant.
     }).then(() => {
-      // console.log('A zeke get request resolved!')
-
-      // build dom
+      // builds dom
       const zekeStart = new JSDOM(this.scraper.lastResponse)
 
       // extract login relative link
       const loginPostLinkAction = Array.from(zekeStart.window.document.querySelectorAll('form[action^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.action)
 
-      // build login link
+      // builds absolute login link
       const relativeSpliced = loginPostLinkAction[0].slice(2)
       this.absoluteZekeLogin = this.firstPageLink.concat(relativeSpliced)
-
-      // console.log(this.absoluteZekeLogin)
     })
   }
 
@@ -69,21 +57,13 @@ export class Restaurant {
    * Method gets a new session cookie and the relative url to the booking page.
    */
   async getZekeSessionToken () {
-    // console.log('----- get zeke session token -----')
-
-    const loginInfo = { // flytta???
+    const loginInfo = { // Restaurant login credentials.
       username: 'zeke',
       password: 'coys'
     }
 
     await new Promise((resolve, reject) => {
-      resolve(this.scraper.postLoginScraper(this.absoluteZekeLogin, loginInfo)) // skrapar första sidan i zeke's bar
-    }).then(() => {
-      // console.log('------post response----')
-      // console.log(this.scraper.lastResponse)
-      // console.log(this.lastResponse.headers.get('set-cookie') )
-      // console.log('------post response----')
-      // this.modifyPostResponse()
+      resolve(this.scraper.postLoginScraper(this.absoluteZekeLogin, loginInfo)) // Posts login credentials to the absolute login url.
     })
   }
 
@@ -94,53 +74,33 @@ export class Restaurant {
     const relativeUrl = this.scraper.lastResponse[0]
     const responseCookie = this.scraper.lastResponse[1]
 
-    // create absolute url
-
     const absoluteUrl = this.firstPageLink.concat(relativeUrl)
-    // console.log(absoluteUrl)
 
-    // extract cookie
-
+    // Extract cookie
     const splitCookie = responseCookie.split('; ')
     const fixedCookie = splitCookie[0]
 
-    // console.log(fixedCookie)
-
-    this.getRequestDataZeke = [absoluteUrl, fixedCookie]
-
-    // this.scrapeDinnerBooking()
+    this.getRequestDataZeke = [absoluteUrl, fixedCookie] // An array with the absolute url and an active session cookie for the booking page.
   }
 
   /**
    * Scrapes the restaurant booking page.
    */
   async scrapeDinnerBooking () {
-    // console.log('----- Scrape dinner booking begins -----')
-
     await new Promise((resolve, reject) => {
-      resolve(this.scraper.getScraper(this.getRequestDataZeke[0], this.getRequestDataZeke[1])) // skrapar första sidan i zeke's bar
-    }).then(() => {
-      // console.log('------booking response----')
-      // console.log(this.scraper.lastResponse)
-      // console.log('------/booking response----')
-      // this.getAllZekeBookingTimes()
+      resolve(this.scraper.getScraper(this.getRequestDataZeke[0], this.getRequestDataZeke[1]))
     })
   }
 
   /**
    * Method saves all free booking times into an array with objects.
    */
-  getAllZekeBookingTimes () { // inkl fullbokade
-    // console.log('------getAllZekeBookingTimes-----')
+  getAllZekeBookingTimes () {
     const zekeBookingDom = new JSDOM(this.scraper.lastResponse)
 
-    // const potentialTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection2"] span')) // WordSection2, 4, 6 är tiderna!
-
     this.zekeAllTimes = []
-    for (let i = 5; i < 8; i++) { // 5-7 = fre-sön
-      // console.log(i)
-
-      let wordSectionNumber
+    for (let i = 5; i < 8; i++) { // Saves all restaurant times in an array.
+      let wordSectionNumber // Used to select elements in the dom. 5-7  = day of the week.
       if (i === 5) {
         wordSectionNumber = 2
       } else if (i === 6) {
@@ -148,60 +108,27 @@ export class Restaurant {
       } else if (i === 7) {
         wordSectionNumber = 6
       }
-      const AllTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection' + wordSectionNumber + '"] span')) // WordSection2, 4, 6 är tiderna!
+      const AllTimes = Array.from(zekeBookingDom.window.document.querySelectorAll('div[class^="WordSection' + wordSectionNumber + '"] span'))
 
-      this.zekeAllTimes = this.zekeAllTimes.concat(AllTimes)
-
-      // console.log(AllTimes)
+      this.zekeAllTimes = this.zekeAllTimes.concat(AllTimes) // Adds all times into an array.
     }
-    // console.log('------all nodes------')
-    // console.log(this.zekeAllTimes)
-    // console.log('allnodes length: ', this.zekeAllTimes.length)
-    // console.log('------all nodes------')
 
-    // gör om till strings:
-    // const freeCount = 0 // används inte??
     for (let i = 0; i < this.zekeAllTimes.length; i++) {
-      // console.log(i)
-
-      /*
-          let splitted = this.zekeAllTimes[i].childNodes[0].nodeValue.split(' F')
-          console.log(splitted)
-          */
-
       const splitted = this.zekeAllTimes[i].childNodes[0].nodeValue.split(' ')
-      // console.log(splitted[12]) // [12] = tiden, [13] = om free eller fully
+      const ifFree = splitted[13].split('\n') // If the time is free.
 
-      const ifFree = splitted[13].split('\n') // tiden i textsträng
-
-      // console.log(ifFree[0]) // Free eller Fully (fullbokat)
-
-      /*
-          if (splitted[1] === 'ree\n          ') { // om bord är ledigt
-            freeCount += 1
-
-          } */
-
-      if (ifFree[0] === 'Free') { // Alla möjliga tider
-        // console.log('!!!')
+      if (ifFree[0] === 'Free') {
         let freeDay
-        if (i <= 3 && i >= 0) { // om fredag
+        if (i <= 3 && i >= 0) { // If Friday
           freeDay = '05'
-        } else if (i <= 7 && i > 3) { // om lördag
+        } else if (i <= 7 && i > 3) { // If Saturday
           freeDay = '06'
-        } else if (i <= 11 && i > 7) { // om söndag
+        } else if (i <= 11 && i > 7) { // If Sunday
           freeDay = '07'
         }
-        const potentialTime = { time: splitted[12], day: freeDay }
+        const potentialTime = { time: splitted[12], day: freeDay } // An object representing a potential time.
         this.AllFreeTimes.push(potentialTime)
       }
     }
-
-    // console.log('antal möjliga alternativ: ', freeCount)
-
-    // console.log(this.AllFreeTimes)
-    // console.log('antal ev möjliga tider: ', this.AllFreeTimes.length)
-
-    // console.log('------getAllZekeBookingTimes-----')
   }
 }

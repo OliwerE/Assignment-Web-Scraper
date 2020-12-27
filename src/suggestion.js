@@ -1,5 +1,5 @@
 /**
- * Module returning result to the user.
+ * Module displaying results to the user.
  *
  * @author Oliwer Ellréus <oe222ez@student.lnu.se>
  * @version 1.0.0
@@ -16,7 +16,6 @@ export class Suggestion {
    */
   constructor (suggestions) {
     this.suggestions = suggestions
-    this.suggestionStrings = [] // array with strings
   }
 
   /**

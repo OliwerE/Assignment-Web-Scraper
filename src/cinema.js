@@ -21,13 +21,11 @@ export class Cinema {
   constructor (calendarPotentialDays, firstPageLink) {
     this.scraper = new Scraper()
 
-    // this.cinemaFirstPageResponse = cinemaFirstPageResponse // startsida cinema  // ANVÄNDS EJ
-    this.calendarPotentialDays = calendarPotentialDays // kalender möjliga dagar
-    this.cinemaFirstPageAbsoluteLink = firstPageLink // absoluta länken till cinemas startsida
-    this.cinemaRequestLinks = [] // links used to request movies from cinema.
-    this.cinemaPossibleDaysAllTimes = [] // alla tider på de möjliga dagarna inkl fullbokade
-    this.cinemaPossibleTimes = [] // alla möjliga tider som fungerar med kalender OCH cinema. obs ej kontrollerade med bord.
-    // //this.movieNames // alla filmerna // denna gav lint error pga "uttryck"
+    this.calendarPotentialDays = calendarPotentialDays // All potential days from the calendar.
+    this.cinemaFirstPageAbsoluteLink = firstPageLink // Absolute link to the cinema
+    this.cinemaRequestLinks = [] // Links used to request movies from cinema.
+    this.cinemaPossibleDaysAllTimes = [] // All movies and times including fully booked.
+    this.cinemaPossibleTimes = [] // All potential times checked with cinema and calendar.
   }
 
   /**
@@ -36,7 +34,6 @@ export class Cinema {
   async start () {
     await this.scrapeCinemaFirstPage()
     this.getNumberOfMovies()
-    // this.createCinemaAvailabilityLinks(movies, numberOfMovies) anropas via getNumberOfMovies!
     await this.scrapePotentialCinemaDays()
     this.addPotentialTimesToArray()
   }
@@ -44,14 +41,9 @@ export class Cinema {
   /**
    * Scrapes the cinema page.
    */
-  async scrapeCinemaFirstPage () { // FLYTTA TILL BÖRJAN PÅ CINEMA MODUL!
-    // console.log('-----börjar skrapa cinema-----')
-
-    // hämtar cinema sidans dom.
-    await new Promise((resolve, reject) => {
+  async scrapeCinemaFirstPage () {
+    await new Promise((resolve, reject) => { // Awaits cinema page response.
       resolve(this.scraper.getScraper(this.cinemaFirstPageAbsoluteLink))
-    }).then(() => {
-      // console.log('Got response from cinema page')
     })
   }
 
@@ -59,19 +51,13 @@ export class Cinema {
    * Creates an array with all movie alternatives.
    */
   getNumberOfMovies () {
-    // console.log('----current movies----')
     const cinemaDom = new JSDOM(this.scraper.lastResponse)
-    // console.log(this.lastResponse)
     const cinemaOption = Array.from(cinemaDom.window.document.querySelectorAll('option[value^="0"]'))// .map(HTMLAnchorElement => HTMLAnchorElement.href)
 
     // All movies
     const movies = cinemaOption.splice(3, cinemaOption.length)
     const numberOfMovies = movies.length
-
-    this.movieNames = movies // används i slutet av application sätter ihop objekt!
-
-    // console.log('number of movies: ', numberOfMovies)
-
+    this.movieNames = movies // used to access all movies outside this module.
     this.createCinemaAvailabilityLinks(numberOfMovies)
   }
 
@@ -81,64 +67,32 @@ export class Cinema {
    * @param {number} numberOfMovies - Number of movies at the cinema.
    */
   createCinemaAvailabilityLinks (numberOfMovies) {
-    // console.log('----createCinemaAvailabilityLinks----')
     const numberOfDays = this.calendarPotentialDays.length
-    // console.log(numberOfDays)
 
-    for (let i = 1; i <= numberOfDays; i++) {
-      // console.log('potential day: ', i)
+    for (let i = 0; i < numberOfDays; i++) {
+      const checkDay = this.calendarPotentialDays[i]
 
-      /*
-        console.log('DEBUG--------------------------------------------------------------------')
-
-        console.log(this.calendar.calendarPotentialDays)
-
-        console.log('DEBUG-----------------------------------------------------------------------')
-        */
-
-      const checkDay = this.calendarPotentialDays[i - 1] // -1 pga index 0
-      // console.log('day: ', checkDay)
-      // console.log('number of movies: ', numberOfMovies)
-
-      // skapa länk
+      // Some of the parts used to create the absolute link.
       const firstRequestPart = 'check?day=0'
       const thirdRequestPart = '&movie=0'
 
-      for (let a = 1; a <= numberOfMovies; a++) { // skapar alla relativa get länkar.
-        const requestLink = this.cinemaFirstPageAbsoluteLink.concat('/').concat(firstRequestPart).concat(checkDay).concat(thirdRequestPart).concat(a) // OBS BEHÖVS ENDAST EN CONCAT MED , MELLAN
+      for (let a = 1; a <= numberOfMovies; a++) { // Creates absolute links for each day and movie.
+        const requestLink = this.cinemaFirstPageAbsoluteLink.concat('/', firstRequestPart, checkDay, thirdRequestPart, a)
         this.cinemaRequestLinks.push(requestLink)
-        // console.log(requestLink)
       }
     }
-    // console.log(this.cinemaRequestLinks)
   }
 
   /**
    * Scrapes all movies on each day.
    */
   async scrapePotentialCinemaDays () {
-    // console.log('-----scrape cinema days-----')
-
-    for (let i = 0; i < this.cinemaRequestLinks.length; i++) { // BUGGEN??? nej?
+    for (let i = 0; i < this.cinemaRequestLinks.length; i++) {
       await new Promise((resolve, reject) => {
-        resolve(this.scraper.getScraper(this.cinemaRequestLinks[i])) // FIX
+        resolve(this.scraper.getScraper(this.cinemaRequestLinks[i]))
       }).then(() => {
-        // console.log('A cinema get request resolved!')
-
-        // spara alla objekt svar:
-
-        const parseResponse = JSON.parse(this.scraper.lastResponse)
-
-        // console.log('-----------')
-        // console.log(parseResponse)
-        // console.log('-----------')
-
-        this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // combines new response with old results
-
-        // console.log('all days:')
-        // console.log(this.cinemaPossibleDaysAllTimes)
-
-        // this.addPotentialTimesToArray() // var utanför innan BUGG HÄR! flyttad till start!
+        const parseResponse = JSON.parse(this.scraper.lastResponse) // Saves response
+        this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // Adds saved response in an array.
       })
     }
   }
@@ -147,22 +101,11 @@ export class Cinema {
    * Adds all potential times into an array.
    */
   addPotentialTimesToArray () {
-    // console.log('------------lägg till möjliga tider---------')
-
     const numberOfTimes = this.cinemaPossibleDaysAllTimes.length
-    // console.log(numberOfTimes) // visar ibland 36 ist för 9 BUGG???
-
     for (let i = 0; i < numberOfTimes; i++) {
-      if (this.cinemaPossibleDaysAllTimes[i].status === 1) { // om tiden är tillgänglig OBS ändrade till 1, 0 var fullbokat!
-        this.cinemaPossibleTimes = this.cinemaPossibleTimes.concat(this.cinemaPossibleDaysAllTimes[i]) // lägger till dagen om den är möjlig i cinemaPossibleTimes
+      if (this.cinemaPossibleDaysAllTimes[i].status === 1) { // If the alternative is not fully booked.
+        this.cinemaPossibleTimes = this.cinemaPossibleTimes.concat(this.cinemaPossibleDaysAllTimes[i]) // Adds the alternative into an array of possible times.
       }
     }
-
-    // console.log('---möjliga tider----')
-    // console.log(this.cinemaPossibleTimes)
-    // console.log('number of possible times: ', this.cinemaPossibleTimes.length)
-    // console.log('---möjliga tider----')
-
-    // this.beginScrapingDinner() // gör från application.js
   }
 }

@@ -13,8 +13,7 @@ import * as application from './application.js'
  * Function starts the web scraper application.
  */
 function startScraper () {
-  // hantera argument
-  let url
+  let url // Url of the first page
   if (isUrl(process.argv[2])) {
     url = process.argv[2]
   } else if (process.argv[2] === undefined) {
@@ -23,10 +22,10 @@ function startScraper () {
     throw new Error('The passed argument is not an url!')
   }
 
-  // skapa scraper
-  const webScraper = new application.Application(url) // npm start https://cscloud6-127.lnu.se/scraper-site-1  // npm start https://cscloud6-127.lnu.se/scraper-site-2
-  // startar scraper
-  webScraper.firstScrape()
+  const webScraper = new application.Application(url)
+  webScraper.firstScrape() // First method in the application
 }
 
 startScraper()
+
+// npm start https://cscloud6-127.lnu.se/scraper-site-1 npm start https://cscloud6-127.lnu.se/scraper-site-2
