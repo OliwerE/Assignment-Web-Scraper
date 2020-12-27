@@ -62,11 +62,7 @@ export class Calendar {
         const day = days[i].childNodes[0].nodeValue
         const dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
 
-        if (dayAnswer === '--' || dayAnswer === '-') {
-
-          // fix !== doesn't work!
-
-        } else { // Adds possible days to an array.
+        if (dayAnswer === 'ok' || dayAnswer === 'Ok' || dayAnswer === 'OK' || dayAnswer === 'oK') { // If the day is possible.
           personDays.push(day)
         }
       }
