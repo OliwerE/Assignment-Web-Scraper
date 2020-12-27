@@ -30,7 +30,7 @@ export class Restaurant {
     await this.scrapeDinnerFirstPage()
     await this.getZekeSessionToken()
     this.modifyPostResponse()
-    await this.scrapeDinnerBooking()
+    await this.scraper.getScraper(this.getRequestDataZeke[0], this.getRequestDataZeke[1]) // Awaits http response from booking page.
     this.getAllZekeBookingTimes()
   }
 
@@ -38,19 +38,17 @@ export class Restaurant {
    * Scrapes the first page of the restaurant and builds an absolute link for the form post action.
    */
   async scrapeDinnerFirstPage () {
-    await new Promise((resolve, reject) => {
-      resolve(this.scraper.getScraper(this.firstPageLink)) // Scrapes the first page of the restaurant.
-    }).then(() => {
-      // builds dom
-      const zekeStart = new JSDOM(this.scraper.lastResponse)
+    await this.scraper.getScraper(this.firstPageLink) // Awaits http response.
 
-      // extract login relative link
-      const loginPostLinkAction = Array.from(zekeStart.window.document.querySelectorAll('form[action^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.action)
+    // builds dom
+    const zekeStart = new JSDOM(this.scraper.lastResponse)
 
-      // builds absolute login link
-      const relativeSpliced = loginPostLinkAction[0].slice(2)
-      this.absoluteZekeLogin = this.firstPageLink.concat(relativeSpliced)
-    })
+    // extract login relative link
+    const loginPostLinkAction = Array.from(zekeStart.window.document.querySelectorAll('form[action^="./"')).map(HTMLAnchorElement => HTMLAnchorElement.action)
+
+    // builds absolute login link
+    const relativeSpliced = loginPostLinkAction[0].slice(2)
+    this.absoluteZekeLogin = this.firstPageLink.concat(relativeSpliced)
   }
 
   /**
@@ -61,10 +59,7 @@ export class Restaurant {
       username: 'zeke',
       password: 'coys'
     }
-
-    await new Promise((resolve, reject) => {
-      resolve(this.scraper.postLoginScraper(this.absoluteZekeLogin, loginInfo)) // Posts login credentials to the absolute login url.
-    })
+    await this.scraper.postLoginScraper(this.absoluteZekeLogin, loginInfo) // Posts login credentials to the absolute login url and awaits http response.
   }
 
   /**
@@ -81,15 +76,6 @@ export class Restaurant {
     const fixedCookie = splitCookie[0]
 
     this.getRequestDataZeke = [absoluteUrl, fixedCookie] // An array with the absolute url and an active session cookie for the booking page.
-  }
-
-  /**
-   * Scrapes the restaurant booking page.
-   */
-  async scrapeDinnerBooking () {
-    await new Promise((resolve, reject) => {
-      resolve(this.scraper.getScraper(this.getRequestDataZeke[0], this.getRequestDataZeke[1]))
-    })
   }
 
   /**

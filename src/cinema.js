@@ -29,22 +29,13 @@ export class Cinema {
   }
 
   /**
-   * A method used to run the other calendar methods in the correct order.
+   * A method used to get the first http response and run the other calendar methods in the correct order.
    */
   async start () {
-    await this.scrapeCinemaFirstPage()
+    await this.scraper.getScraper(this.cinemaFirstPageAbsoluteLink) // Awaits first page http response.
     this.getNumberOfMovies()
     await this.scrapePotentialCinemaDays()
     this.addPotentialTimesToArray()
-  }
-
-  /**
-   * Scrapes the cinema page.
-   */
-  async scrapeCinemaFirstPage () {
-    await new Promise((resolve, reject) => { // Awaits cinema page response.
-      resolve(this.scraper.getScraper(this.cinemaFirstPageAbsoluteLink))
-    })
   }
 
   /**
@@ -88,12 +79,9 @@ export class Cinema {
    */
   async scrapePotentialCinemaDays () {
     for (let i = 0; i < this.cinemaRequestLinks.length; i++) {
-      await new Promise((resolve, reject) => {
-        resolve(this.scraper.getScraper(this.cinemaRequestLinks[i]))
-      }).then(() => {
-        const parseResponse = JSON.parse(this.scraper.lastResponse) // Saves response
-        this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // Adds saved response in an array.
-      })
+      await this.scraper.getScraper(this.cinemaRequestLinks[i]) // Awaits http response.
+      const parseResponse = JSON.parse(this.scraper.lastResponse) // Saves response
+      this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // Adds saved response in an array.
     }
   }
 

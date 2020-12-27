@@ -51,31 +51,27 @@ export class Calendar {
    */
   async scrapeAllCalendars () {
     for (let i = 0; i < this.calendarFirstPageLinks.length; i++) {
-      await new Promise((resolve, reject) => { // gör om till "bara" await getscraper ?? utan promise
-        resolve(this.scraper.getScraper(this.calendarFirstPageLinks[i]))
-      }).then(() => {
-        // Adds all days and day answers in two separate arrays
-        const calendarDom = new JSDOM(this.scraper.lastResponse)
-        const days = Array.from(calendarDom.window.document.querySelectorAll('th')) // Days
-        const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td')) // Day answer
+      await this.scraper.getScraper(this.calendarFirstPageLinks[i]) // Awaits http response.
+      // Adds all days and day answers in two separate arrays
+      const calendarDom = new JSDOM(this.scraper.lastResponse)
+      const days = Array.from(calendarDom.window.document.querySelectorAll('th')) // Days
+      const ifDayPossible = Array.from(calendarDom.window.document.querySelectorAll('td')) // Day answer
 
-        const personDays = [] // A persons possible days.
-        for (let i = 0; i < 3; i++) {
-          const day = days[i].childNodes[0].nodeValue
-          const dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
+      const personDays = [] // A persons possible days.
+      for (let i = 0; i < 3; i++) {
+        const day = days[i].childNodes[0].nodeValue
+        const dayAnswer = ifDayPossible[i].childNodes[0].nodeValue
 
-          if (dayAnswer === '--' || dayAnswer === '-') {
+        if (dayAnswer === '--' || dayAnswer === '-') {
 
-            // fix !== doesn't work!
+          // fix !== doesn't work!
 
-          } else { // Adds possible days to an array.
-            personDays.push(day)
-          }
+        } else { // Adds possible days to an array.
+          personDays.push(day)
         }
-        this.calendarDays.push(personDays) // Adds array into another array (calendarDays).
-
-        this.possibleDays()
-      })
+      }
+      this.calendarDays.push(personDays) // Adds array into another array (calendarDays).
+      this.possibleDays()
     }
   }
 

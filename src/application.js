@@ -31,11 +31,8 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    * Gets the first response using the first url.
    */
   async firstScrape () {
-    await new Promise((resolve, reject) => { // Awaits response from first page.
-      resolve(this.getScraper(this.startUrl))
-    }).then(() => {
-      this.getFirstLinks()
-    })
+    await this.getScraper(this.startUrl) // Awaits http response.
+    this.getFirstLinks()
   }
 
   /**
@@ -45,46 +42,27 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
     const startDom = new JSDOM(this.lastResponse)
     this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href) // Creates an array with all links on the first page.
     console.log('Scraping links...OK')
-    this.beginScrapeCalendar()
+    this.scrapeFirstPageLinks()
   }
 
   /**
-   * Creates an instance of the Calendar class and runs first method, then calls next method in this class.
+   * Creates an instance of the Calendar, Cinema and Restaurant.
+   * Then scrapes all links.
    */
-  async beginScrapeCalendar () {
+  async scrapeFirstPageLinks () {
     this.calendar = new Calendar(this.firstPageLinks[0]) // Creates new instance of the calendar class
-    await new Promise((resolve, reject) => {
-      resolve(this.calendar.start()) // Runs the calendar class.
-    }).then(() => {
-      console.log('Scraping available days...OK')
-      this.scrapeCinema()
-    })
-  }
-
-  /**
-   * Creates an instance of the Cinema class and runs first method, then calls next method in this class.
-   */
-  async scrapeCinema () {
     this.cinema = new Cinema(this.calendar.calendarPotentialDays, this.firstPageLinks[1])
-    await new Promise((resolve, reject) => {
-      resolve(this.cinema.start()) // Runs the cinema class.
-    }).then(() => {
-      console.log('Scraping showtimes...OK')
-      this.scrapeRestaurant()
-    })
-  }
-
-  /**
-   * Creates an instance of the Restaurant class and runs first method, then calls next method in this class.
-   */
-  async scrapeRestaurant () {
     this.restaurant = new Restaurant(this.firstPageLinks[2])
-    await new Promise((resolve, reject) => {
-      resolve(this.restaurant.start()) // Runs the restaurant class.
-    }).then(() => {
-      console.log('Scraping possible reservations...OK')
-      this.findPossibleTimes()
-    })
+
+    await this.calendar.start() // Scrapes calendar
+    console.log('Scraping available days...OK')
+
+    await this.cinema.start() // Scrapes cinema
+    console.log('Scraping showtimes...OK')
+
+    await this.restaurant.start() // Scrapes restaurant
+    console.log('Scraping possible reservations...OK')
+    this.findPossibleTimes()
   }
 
   /**
