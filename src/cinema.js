@@ -15,13 +15,13 @@ export class Cinema {
   /**
    * Constructs the cinema object.
    *
-   * @param {Array} calendarPotentialDays - An array with all potential days.
+   * @param {Array} possibleDays - An array with all potential days.
    * @param {string} firstPageLink - Link to the first page of the cinema.
    */
-  constructor (calendarPotentialDays, firstPageLink) {
+  constructor (possibleDays, firstPageLink) {
     this.scraper = new Scraper()
 
-    this.calendarPotentialDays = calendarPotentialDays // All potential days from the calendar.
+    this.possibleDays = possibleDays // All days to request movies from.
     this.cinemaFirstPageAbsoluteLink = firstPageLink // Absolute link to the cinema
     this.cinemaRequestLinks = [] // Links used to request movies from cinema.
     this.cinemaPossibleDaysAllTimes = [] // All movies and times including fully booked.
@@ -58,10 +58,10 @@ export class Cinema {
    * @param {number} numberOfMovies - Number of movies at the cinema.
    */
   createCinemaAvailabilityLinks (numberOfMovies) {
-    const numberOfDays = this.calendarPotentialDays.length
+    const numberOfDays = this.possibleDays.length
 
     for (let i = 0; i < numberOfDays; i++) {
-      const checkDay = this.calendarPotentialDays[i]
+      const checkDay = this.possibleDays[i]
 
       // Some of the parts used to create the absolute link.
       const firstRequestPart = 'check?day=0'
