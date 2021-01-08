@@ -51,7 +51,7 @@ export class Application {
    * Then scrapes all links.
    */
   async scrapeFirstPageLinks () {
-    this.calendar = new Calendar(this.firstPageLinks[0]) // Creates new instance of the calendar class
+    this.calendar = new Calendar(this.firstPageLinks[0])
     this.cinema = new Cinema(this.calendar.calendarPotentialDays, this.firstPageLinks[1])
     this.restaurant = new Restaurant(this.firstPageLinks[2])
 
@@ -115,7 +115,7 @@ export class Application {
             const splitTableTimes = tableTimes.split('-')
             const altObjTime = splitTableTimes[0].concat(':00-', splitTableTimes[1], ':00')
 
-            const newAlternative = { day: day, movie: movieName, movieBegin: movieTime, tableHours: altObjTime } // Creates a suggestion object.
+            const newAlternative = { day: day, movie: movieName, movieBegin: movieTime, tableHours: altObjTime }
             this.alternatives.push(newAlternative) // Adds suggestion object in an array.
           }
         }

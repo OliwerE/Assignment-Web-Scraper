@@ -20,7 +20,7 @@ export class Restaurant {
   constructor (firstPageLink) {
     this.firstPageLink = firstPageLink // First page of the restaurant.
     this.scraper = new Scraper()
-    this.AllFreeTimes = [] // An array with all free times.
+    this.AllFreeTimes = []
   }
 
   /**

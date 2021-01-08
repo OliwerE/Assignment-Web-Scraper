@@ -22,8 +22,8 @@ export class Cinema {
     this.scraper = new Scraper()
 
     this.possibleDays = possibleDays // All days to request movies from.
-    this.cinemaFirstPageAbsoluteLink = firstPageLink // Absolute link to the cinema
-    this.cinemaRequestLinks = [] // Links used to request movies from cinema.
+    this.cinemaFirstPageAbsoluteLink = firstPageLink
+    this.cinemaRequestLinks = []
     this.cinemaPossibleDaysAllTimes = [] // All movies and times including fully booked.
     this.cinemaPossibleTimes = [] // All potential times checked with cinema and calendar.
   }
@@ -79,8 +79,8 @@ export class Cinema {
    */
   async scrapePotentialCinemaDays () {
     for (let i = 0; i < this.cinemaRequestLinks.length; i++) {
-      await this.scraper.getScraper(this.cinemaRequestLinks[i]) // Awaits http response.
-      const parseResponse = JSON.parse(this.scraper.lastResponse) // Saves response
+      await this.scraper.getScraper(this.cinemaRequestLinks[i])
+      const parseResponse = JSON.parse(this.scraper.lastResponse)
       this.cinemaPossibleDaysAllTimes = [...this.cinemaPossibleDaysAllTimes, ...parseResponse] // Adds saved response in an array.
     }
   }

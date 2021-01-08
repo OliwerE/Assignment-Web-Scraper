@@ -19,8 +19,8 @@ export class Calendar {
    */
   constructor (firstLink) {
     this.link = firstLink // start url of calendar.
-    this.calendarPotentialDays = [] // All potential days.
-    this.calendarFirstPageLinks = [] // Links to all calendars.
+    this.calendarPotentialDays = []
+    this.calendarFirstPageLinks = []
     this.calendarDays = [] // An array with all persons possible days.
     this.scraper = new Scraper()
   }

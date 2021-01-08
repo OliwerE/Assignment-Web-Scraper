@@ -23,9 +23,7 @@ function startScraper () {
   }
 
   const webScraper = new application.Application(url)
-  webScraper.firstScrape() // First method in the application
+  webScraper.firstScrape() // Starts application
 }
 
 startScraper()
-
-// npm start https://cscloud6-127.lnu.se/scraper-site-1 npm start https://cscloud6-127.lnu.se/scraper-site-2
