@@ -15,23 +15,24 @@ import { Suggestion } from './suggestion.js'
 /**
  * The main class for the web scraper application
  */
-export class Application extends Scraper { // ta bort extends Scraper när allt är flyttat till moduler
+export class Application {
   /**
    * Constructs the application object.
    *
    * @param {string} startUrl - The First url.
    */
   constructor (startUrl) {
-    super()
     this.startUrl = startUrl // Url where the webscraper begins.
     this.alternatives = [] // An Array with all alternatives for sugestion module.
+
+    this.scraper = new Scraper()
   }
 
   /**
    * Gets the first response using the first url.
    */
   async firstScrape () {
-    await this.getScraper(this.startUrl) // Awaits http response.
+    await this.scraper.getScraper(this.startUrl) // Awaits http response.
     this.getFirstLinks()
   }
 
@@ -39,7 +40,7 @@ export class Application extends Scraper { // ta bort extends Scraper när allt 
    * Creates dom from first response and extract links.
    */
   getFirstLinks () {
-    const startDom = new JSDOM(this.lastResponse)
+    const startDom = new JSDOM(this.scraper.lastResponse)
     this.firstPageLinks = Array.from(startDom.window.document.querySelectorAll('a[href^="https://"], a[href^="http://"]')).map(HTMLAnchorElement => HTMLAnchorElement.href) // Creates an array with all links on the first page.
     console.log('Scraping links...OK')
     this.scrapeFirstPageLinks()
