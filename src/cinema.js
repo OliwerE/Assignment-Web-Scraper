@@ -43,7 +43,7 @@ export class Cinema {
    */
   getNumberOfMovies () {
     const cinemaDom = new JSDOM(this.scraper.lastResponse)
-    const cinemaOption = Array.from(cinemaDom.window.document.querySelectorAll('option[value^="0"]'))// .map(HTMLAnchorElement => HTMLAnchorElement.href)
+    const cinemaOption = Array.from(cinemaDom.window.document.querySelectorAll('option[value^="0"]'))
 
     // All movies
     const movies = cinemaOption.splice(3, cinemaOption.length)

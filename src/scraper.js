@@ -28,7 +28,8 @@ export class Scraper {
     }).then(text => {
       this.lastResponse = text
     }).catch(err => {
-      console.log('Node fetch (getScraper) error: ', err)
+      console.log(err)
+      throw new Error('An error has occurred (getScraper)')
     })
   }
 
@@ -51,7 +52,8 @@ export class Scraper {
     }).then(response => {
       this.lastResponse = [response.headers.get('location'), response.headers.get('set-cookie')] // An array with a relative url to the next page and an active session cookie.
     }).catch(err => {
-      console.log('an error has occurred (postLoginScraper)', err)
+      console.log(err)
+      throw new Error('An error has occurred (postLoginScraper)')
     })
   }
 }
